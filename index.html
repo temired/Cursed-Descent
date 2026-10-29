@@ -216,6 +216,27 @@ button { font: inherit; color: inherit; }
 .statistik div { border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
 .statistik small { display: block; color: var(--muted); font-size: .8rem; }
 .statistik b { font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+.eintragen { max-width: 460px; margin: 0 auto 20px; display: grid; gap: 6px; text-align: left; }
+.eintragen label { color: var(--muted); font-size: .9rem; }
+.eintragen div { display: flex; gap: 8px; }
+.eintragen input { flex: 1; min-width: 0; font: inherit; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px; }
+.eintragen input:focus-visible { outline-offset: 1px; }
+.eintragen small { color: var(--muted); min-height: 1.2em; }
+.buehne-voll .eintragen .knopf { min-width: 0; }
+
+/* Rangliste */
+.unter-reiter { margin-top: -6px; }
+.unter-reiter button { font-weight: 500; padding: 4px 12px; font-size: .92rem; }
+.rangliste { list-style: none; margin: 0 auto; padding: 0; display: grid; gap: 6px; max-width: 620px; }
+.rangliste li { display: flex; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; background: var(--surface-2); }
+.rangliste li.ich { border-color: var(--fackel); box-shadow: inset 3px 0 0 var(--fackel); }
+.rangliste .platz { width: 2ch; text-align: right; font-weight: 800; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rangliste li:nth-child(1) .platz { color: var(--gold); }
+.rangliste .wer { flex: 1; min-width: 0; display: grid; }
+.rangliste .wer b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rangliste .wer small { color: var(--muted); font-size: .84rem; }
+.rangliste .raum { color: var(--muted); white-space: nowrap; }
+.rangliste .raum b { color: var(--ink); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
 .hinweis { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); transform: translateX(-50%);
   background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 999px; font-weight: 500; z-index: 70; opacity: 0; transition: opacity .2s ease; pointer-events: none; }
 .hinweis.an { opacity: 1; }
@@ -326,6 +347,10 @@ button.chip { cursor: pointer; font: inherit; font-size: .85rem; }
 <div class="hinweis" id="hinweis" role="status"></div>
 
 <script>
+// Rangliste: Werte aus Supabase (Project Settings → API). Leer = Rangliste aus.
+const SUPABASE_URL = "";
+const SUPABASE_KEY = "";
+
 // =====================================================================
 //   DATEN
 // =====================================================================
@@ -529,13 +554,13 @@ const wahl = (liste) => liste[zufall(0, liste.length - 1)];
 const $ = (id) => document.getElementById(id);
 const elText = (e) => `${ELEMENTE[e].icon} ${ELEMENTE[e].name}`;
 
-let s = null, meta, beschaeftigt = false, idZaehler = 0, hubReiter = "lauf", hubKlasse = "krieger", hubFluch = 0;
+let s = null, meta, beschaeftigt = false, idZaehler = 0, hubReiter = "lauf", hubKlasse = "krieger", hubFluch = 0, ranglisteModus = "tag";
 
 // =====================================================================
 //   META-FORTSCHRITT (bleibt zwischen den Läufen erhalten)
 // =====================================================================
 function metaLaden() {
-  const leer = { splitter: 0, skills: {}, klassen: { krieger: true }, fluchMax: 0, erfolgStufe: {}, stats: {}, rekord: 0, laeufe: 0, bestiarium: {}, tagesBest: {} };
+  const leer = { splitter: 0, skills: {}, klassen: { krieger: true }, fluchMax: 0, erfolgStufe: {}, stats: {}, rekord: 0, laeufe: 0, bestiarium: {}, tagesBest: {}, name: "", spielerId: "" };
   try { return Object.assign(leer, JSON.parse(localStorage.getItem("miniDungeonMeta3")) || {}); } catch (e) { return leer; }
 }
 // Laufstand speichern, damit Neuladen den Lauf nicht beendet
@@ -1400,12 +1425,105 @@ function spielende(ergebnis) {
       </div>
       ${neuerRekord ? `<p class="rekord">Neuer Rekord: Raum ${s.raum}</p>` : ""}
       ${fluchFrei ? `<p class="rekord">Fluchstufe ${meta.fluchMax} freigeschaltet</p>` : ""}
+      ${ranglisteAn() ? `<form class="eintragen" id="eintragenForm">
+        <label for="spielerName">Name für die ${s.tages ? "Tages-" : ""}Rangliste</label>
+        <div><input id="spielerName" maxlength="20" autocomplete="nickname" value="${esc(meta.name)}" placeholder="Dein Name" required>
+        <button class="knopf primaer klein" type="submit">Eintragen</button></div>
+        <small id="eintragenStatus"></small></form>` : ""}
       <button class="knopf angriff" id="hubKnopf" type="button">Zurück ins Lager der Ahnen</button>
     </section>`;
   $("ort").innerHTML = "";
   $("inventar").hidden = true;
+  const form = $("eintragenForm");
+  if (form) {
+    const lauf = { modus: s.tages ? "tag" : "normal", tag: s.tages ? tagesSchluessel() : null, raum: s.raum, bosse: s.bosse, level: s.level, klasse: s.klasse, fluch: s.fluch, ergebnis };
+    form.addEventListener("submit", (e) => { e.preventDefault(); laufEintragen(lauf, form); });
+  }
   $("hubKnopf").addEventListener("click", () => { s = null; hubReiter = "baum"; zeichneHub(); });
   $("hubKnopf").focus();
+}
+
+// =====================================================================
+//   RANGLISTE (Supabase)
+// =====================================================================
+const ranglisteAn = () => Boolean(SUPABASE_URL && SUPABASE_KEY);
+const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+function spielerId() {
+  if (!meta.spielerId) {
+    // randomUUID gibt es nur über https, getRandomValues überall
+    const b = crypto.getRandomValues(new Uint8Array(16)); b[6] = (b[6] & 15) | 64; b[8] = (b[8] & 63) | 128;
+    const h = [...b].map((x) => x.toString(16).padStart(2, "0")).join("");
+    meta.spielerId = `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+    metaSpeichern();
+  }
+  return meta.spielerId;
+}
+async function supabase(pfad, optionen = {}) {
+  const kopf = { apikey: SUPABASE_KEY, "Content-Type": "application/json", ...optionen.headers };
+  // Alte anon keys sind JWTs und gehören zusätzlich in den Authorization-Header
+  if (SUPABASE_KEY.startsWith("eyJ")) kopf.Authorization = `Bearer ${SUPABASE_KEY}`;
+  const antwort = await fetch(`${SUPABASE_URL.replace(/\/$/, "")}/rest/v1/${pfad}`, { ...optionen, headers: kopf });
+  if (!antwort.ok) throw new Error(`Supabase ${antwort.status}`);
+  return antwort;
+}
+function ranglistePfad(modus) {
+  return modus === "tag"
+    ? `rangliste_tag?tag=eq.${encodeURIComponent(tagesSchluessel())}`
+    : "rangliste_allzeit?";
+}
+async function ranglisteLaden(modus) {
+  const antwort = await supabase(`${ranglistePfad(modus)}&select=*&order=raum.desc,bosse.desc,erstellt.asc&limit=25`);
+  return antwort.json();
+}
+async function platzErmitteln(modus, raum) {
+  const antwort = await supabase(`${ranglistePfad(modus)}&select=spieler_id&raum=gt.${raum}&spieler_id=neq.${spielerId()}&limit=1`, { headers: { Prefer: "count=exact" } });
+  const gesamt = Number((antwort.headers.get("Content-Range") || "").split("/")[1]);
+  return Number.isFinite(gesamt) ? gesamt + 1 : null;
+}
+async function laufEintragen(lauf, form) {
+  const name = $("spielerName").value.trim().slice(0, 20);
+  const status = $("eintragenStatus");
+  if (!name) return;
+  meta.name = name; metaSpeichern();
+  form.querySelectorAll("input, button").forEach((el) => (el.disabled = true));
+  status.textContent = "Wird eingetragen …";
+  try {
+    await supabase("laeufe", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ ...lauf, name, spieler_id: spielerId() }) });
+    const platz = await platzErmitteln(lauf.modus, lauf.raum).catch(() => null);
+    status.textContent = platz ? `Eingetragen. Aktuell Platz ${platz} ${lauf.modus === "tag" ? "im heutigen Tages-Dungeon" : "in der Allzeit-Liste"}.` : "Eingetragen.";
+    ranglisteModus = lauf.modus === "tag" ? "tag" : "allzeit";
+  } catch (e) {
+    status.textContent = "Eintragen fehlgeschlagen. Prüfe deine Verbindung.";
+    form.querySelectorAll("input, button").forEach((el) => (el.disabled = false));
+  }
+}
+function ranglisteHtml() {
+  if (!ranglisteAn()) return `<p class="fluch-text" style="text-align:center">Die Rangliste ist noch nicht eingerichtet.</p>`;
+  return `<div class="reiter unter-reiter">
+      <button type="button" data-rmodus="tag" aria-pressed="${ranglisteModus === "tag"}">Tages-Dungeon heute</button>
+      <button type="button" data-rmodus="allzeit" aria-pressed="${ranglisteModus === "allzeit"}">Allzeit</button>
+    </div>
+    <p class="fluch-text" style="text-align:center;margin-bottom:10px">${ranglisteModus === "tag"
+      ? "Bester Lauf je Spieler im heutigen Tages-Dungeon. Für alle gleich: Krieger, ohne Fluch, ohne Skills."
+      : "Bester Lauf je Spieler über alle Läufe. Skills und Fluchstufe zählen mit."}</p>
+    <div id="ranglisteInhalt"><p class="fluch-text" style="text-align:center">Lädt …</p></div>`;
+}
+async function ranglisteFuellen() {
+  const ziel = $("ranglisteInhalt");
+  if (!ziel) return;
+  const modus = ranglisteModus;
+  try {
+    const zeilen = await ranglisteLaden(modus);
+    if (!$("ranglisteInhalt") || modus !== ranglisteModus) return;
+    const ich = meta.spielerId;
+    $("ranglisteInhalt").innerHTML = zeilen.length ? `<ol class="rangliste">${zeilen.map((z, i) => `
+      <li class="${z.spieler_id === ich ? "ich" : ""}"><span class="platz">${i + 1}</span>
+        <span class="wer"><b>${esc(z.name)}</b><small>${modus === "tag" ? `Level ${z.level}` : `${esc(KLASSEN.find((k) => k.key === z.klasse)?.name || z.klasse)} · Level ${z.level}${z.fluch ? ` · Fluch ${z.fluch}` : ""}`} · ${z.bosse} ${z.bosse === 1 ? "Boss" : "Bosse"}</small></span>
+        <span class="raum">Raum <b>${z.raum}</b></span></li>`).join("")}</ol>`
+      : `<p class="fluch-text" style="text-align:center">${modus === "tag" ? "Heute hat sich noch niemand eingetragen. Sei die erste Person!" : "Noch keine Einträge."}</p>`;
+  } catch (e) {
+    if ($("ranglisteInhalt")) $("ranglisteInhalt").innerHTML = `<p class="fluch-text" style="text-align:center">Rangliste konnte nicht geladen werden.</p>`;
+  }
 }
 
 // =====================================================================
@@ -1472,6 +1590,8 @@ function zeichneHub() {
       }).join("")}</div>`).join("")}</div>`;
   } else if (hubReiter === "bestiarium") {
     inhalt = bestiariumHtml();
+  } else if (hubReiter === "rangliste") {
+    inhalt = ranglisteHtml();
   } else {
     const gesamt = ERFOLGE.reduce((n, e) => n + e.ziele.length, 0);
     const erreicht = ERFOLGE.reduce((n, e) => n + (meta.erfolgStufe[e.id] || 0), 0);
@@ -1501,6 +1621,7 @@ function zeichneHub() {
         <button type="button" data-reiter="baum" aria-pressed="${hubReiter === "baum"}">Skillbaum</button>
         <button type="button" data-reiter="erfolge" aria-pressed="${hubReiter === "erfolge"}">Erfolge</button>
         <button type="button" data-reiter="bestiarium" aria-pressed="${hubReiter === "bestiarium"}">Bestiarium</button>
+        <button type="button" data-reiter="rangliste" aria-pressed="${hubReiter === "rangliste"}">Rangliste</button>
       </div>
       ${inhalt}
     </section>`;
@@ -1513,6 +1634,8 @@ function zeichneHub() {
     meta.splitter -= k.kosten; meta.klassen[k.key] = true; hubKlasse = k.key; metaSpeichern();
     hinweis(`${k.name} freigeschaltet`); zeichneHub();
   }));
+  $("arena").querySelectorAll("[data-rmodus]").forEach((b) => b.addEventListener("click", () => { ranglisteModus = b.dataset.rmodus; zeichneHub(); }));
+  if (hubReiter === "rangliste") ranglisteFuellen();
   $("arena").querySelectorAll("[data-fluch]").forEach((b) => b.addEventListener("click", () => { hubFluch = Number(b.dataset.fluch); zeichneHub(); }));
   $("arena").querySelectorAll("[data-skill]").forEach((b) => b.addEventListener("click", () => {
     const k = SKILLS.find((x) => x.id === b.dataset.skill);
@@ -1873,7 +1996,7 @@ function dialog({ titel, text, html = "", knoepfe }) {
 function schliesseDialog() { $("schleier").classList.remove("offen"); }
 
 document.addEventListener("keydown", (e) => {
-  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.altKey || e.ctrlKey || e.metaKey || e.target.matches("input")) return;
   const nr = parseInt(e.key, 10);
   if ($("schleier").classList.contains("offen")) {
     const k = $("dialog").querySelectorAll(".knoepfe button");
