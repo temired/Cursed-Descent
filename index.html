@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cursed Descent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ece2ca; --surface: #e2d4b5; --surface-2: #d5c39d; --ink: #2a2018; --muted: #6d5c46; --line: #b8a37b;
+  --blut: #a8322b; --heil: #2b836d; --gold: #8f6b12; --fackel: #b8661a; --exp: #514a9e;
+  --selten: #2f68b5; --episch: #7a3fb0; --legendaer: #b5620e;
+  --schatten: rgba(42, 32, 24, .18);
+  color-scheme: light; box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c; --surface: #1d2028; --surface-2: #282c36; --ink: #ece3cc; --muted: #a0978a; --line: #383e4a;
+    --blut: #e0554b; --heil: #4cc4a2; --gold: #e5c060; --fackel: #f2a446; --exp: #938cf0;
+    --selten: #6aa8f2; --episch: #b98af2; --legendaer: #f3a84a;
+    --schatten: rgba(0, 0, 0, .45); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1d2028; --surface-2: #282c36; --ink: #ece3cc; --muted: #a0978a; --line: #383e4a;
+  --blut: #e0554b; --heil: #4cc4a2; --gold: #e5c060; --fackel: #f2a446; --exp: #938cf0;
+  --selten: #6aa8f2; --episch: #b98af2; --legendaer: #f3a84a;
+  --schatten: rgba(0, 0, 0, .45); color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0; min-height: 100%;
+  background: radial-gradient(ellipse 70% 45% at 50% -8%, color-mix(in srgb, var(--fackel) 22%, transparent), transparent 70%), var(--bg);
+  color: var(--ink); font-family: "Alegreya Sans", "Segoe UI", system-ui, sans-serif; font-size: 17px; line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+.titel { font-family: "IM Fell English SC", "Palatino Linotype", Georgia, serif; font-weight: 400; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--fackel); outline-offset: 3px; }
+.huelle { max-width: 1140px; margin: 0 auto; padding: 18px 16px 40px; }
+
+/* Kopf */
+.kopf { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
+.kopf h1 { margin: 0; font-size: 1.7rem; letter-spacing: .02em; white-space: nowrap; }
+.kopf .ort { color: var(--muted); font-size: .95rem; text-align: right; }
+.kopf .ort b { color: var(--ink); }
+.thema-knopf { background: none; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer; color: var(--muted); font-size: .9rem; }
+
+/* Layout */
+.raster { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; align-items: start; }
+.links { display: grid; gap: 18px; min-width: 0; }
+@media (max-width: 880px) { .raster { grid-template-columns: 1fr; } }
+.tafel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; position: relative; }
+
+/* Gegner */
+.gegner-buehne { padding: 24px 22px 20px; text-align: center; border-bottom: 1px solid var(--line);
+  background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--fackel) 14%, transparent), transparent 60%); }
+.gegner-buehne.boss { background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--blut) 22%, transparent), transparent 62%); }
+.boss-banner { display: none; color: var(--blut); font-size: 1rem; letter-spacing: .08em; margin-bottom: 4px; }
+.boss .boss-banner { display: block; }
+.siegel { font-size: clamp(80px, 15vw, 124px); line-height: 1; margin: 4px 0 8px; display: inline-block; filter: drop-shadow(0 10px 18px var(--schatten)); user-select: none; }
+.gegner-name { margin: 0; font-size: clamp(1.6rem, 4vw, 2.3rem); line-height: 1.1; }
+.merkmale { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 10px 0 4px; }
+.chip { font-size: .85rem; border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; background: var(--surface); }
+.chip.schwach { border-color: var(--heil); color: var(--heil); font-weight: 700; }
+.chip.stark { border-color: var(--blut); color: var(--blut); font-weight: 700; }
+.absicht { margin: 6px 0 12px; color: var(--muted); font-size: .95rem; min-height: 1.4em; }
+.absicht.gefahr { color: var(--blut); font-weight: 700; }
+
+.balken { position: relative; height: 14px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.balken > i { position: absolute; inset: 0 auto 0 0; width: 100%; border-radius: inherit; transition: width .45s cubic-bezier(.2,.8,.2,1); }
+.balken .nachzieh { background: color-mix(in srgb, var(--fackel) 70%, transparent); transition-delay: .25s; transition-duration: .7s; }
+.balken.leben > i.wert { background: var(--blut); }
+.balken.exp { height: 8px; }
+.balken.exp > i.wert { background: var(--exp); }
+.balken-zeile { display: flex; justify-content: space-between; font-size: .88rem; color: var(--muted); margin: 6px 2px 0; }
+.balken-zeile b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.gegner-leben { max-width: 420px; margin: 0 auto; }
+
+/* Spieler */
+.spieler { padding: 18px 22px 18px; }
+.spieler-kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.spieler-kopf h2 { margin: 0; font-size: 1.35rem; }
+.spieler-kopf span { color: var(--muted); font-size: .92rem; }
+.spieler .balken.leben > i.wert { background: var(--heil); }
+.spieler .balken.leben.kritisch > i.wert { background: var(--blut); }
+.werte { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+@media (max-width: 560px) { .werte { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.wert-feld { border-left: 2px solid var(--line); padding: 2px 0 2px 10px; }
+.wert-feld small { display: block; color: var(--muted); font-size: .8rem; }
+.wert-feld b { font-size: 1.12rem; font-variant-numeric: tabular-nums; }
+.wert-feld.gold b { color: var(--gold); }
+
+/* Aktionen */
+.aktionen { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 10px; padding: 14px 16px 16px; border-top: 1px solid var(--line); background: var(--surface-2); }
+.aktionen.zwei { grid-template-columns: 1.6fr 1fr; }
+@media (max-width: 560px) { .aktionen { grid-template-columns: 1fr 1fr; } .aktionen .angriff { grid-column: 1 / -1; } }
+.knopf { position: relative; cursor: pointer; border: 1px solid var(--line); border-radius: 6px; background: var(--surface);
+  padding: 12px 14px; font-weight: 700; font-size: 1.05rem; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  transition: transform .08s ease, border-color .15s ease; }
+.knopf:hover:not(:disabled) { border-color: var(--fackel); }
+.knopf:active:not(:disabled) { transform: translateY(1px) scale(.99); }
+.knopf:disabled { opacity: .45; cursor: not-allowed; }
+.knopf kbd { font-family: inherit; font-weight: 500; font-size: .78rem; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; }
+.knopf.angriff { background: var(--blut); border-color: var(--blut); color: #fff7ec; }
+.knopf.angriff kbd { color: #fff7ecbb; border-color: #fff7ec66; }
+.knopf.angriff:hover:not(:disabled) { border-color: var(--ink); }
+.knopf.primaer { background: var(--fackel); border-color: var(--fackel); color: #1b130a; }
+.knopf .unter { display: block; font-weight: 400; font-size: .82rem; opacity: .85; }
+.knopf.klein { padding: 7px 10px; font-size: .92rem; }
+
+/* Lager-Vorschau */
+.lager { padding: 24px 22px 18px; text-align: center; border-bottom: 1px solid var(--line); }
+.lager h2 { margin: 0 0 4px; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+.lager > p { margin: 0 auto 14px; color: var(--muted); max-width: 52ch; }
+.vorschau { display: flex; align-items: center; gap: 16px; text-align: left; max-width: 520px; margin: 0 auto;
+  border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; background: var(--surface-2); }
+.vorschau.boss { border-color: var(--blut); }
+.vorschau .siegel { font-size: 58px; margin: 0; }
+.vorschau h3 { margin: 0; font-size: 1.35rem; }
+.vorschau .merkmale { justify-content: flex-start; margin: 6px 0 2px; }
+.vorschau small { color: var(--muted); }
+
+/* Inventar */
+.inventar { padding: 16px 18px 18px; }
+.inventar h2 { margin: 0; font-size: 1.3rem; }
+.inv-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+.inv-kopf span { color: var(--muted); font-size: .9rem; }
+.slots { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.slots .feld { min-height: 74px; }
+.beutel { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 640px) { .slots, .beutel { grid-template-columns: repeat(3, minmax(0, 1fr)); } .wert-feld b { font-size: 1rem; } }
+.unterkopf { margin: 16px 0 8px; display: flex; justify-content: space-between; align-items: baseline; }
+.unterkopf h3 { margin: 0; font-size: 1.1rem; }
+.unterkopf span { color: var(--muted); font-size: .88rem; }
+.feld { cursor: pointer; text-align: left; border: 1px solid var(--line); border-left-width: 3px; border-radius: 6px; background: var(--surface-2);
+  padding: 8px 9px; min-height: 66px; display: flex; flex-direction: column; gap: 2px; font-size: .84rem; line-height: 1.25; }
+.feld:hover { border-color: var(--fackel); }
+.feld.gewaehlt { outline: 2px solid var(--fackel); outline-offset: 1px; }
+.feld .art { color: var(--muted); font-size: .75rem; }
+.feld .nm { font-weight: 700; overflow-wrap: anywhere; hyphens: auto; }
+.feld { min-width: 0; }
+.feld .st { color: var(--muted); }
+.feld.leer { cursor: default; opacity: .55; border-style: dashed; border-left-width: 1px; justify-content: center; align-items: center; }
+.feld.leer:hover { border-color: var(--line); }
+.feld.besser .st::after { content: " ▲"; color: var(--heil); font-weight: 700; }
+.s-gewoehnlich { border-left-color: var(--line); }
+.s-selten { border-left-color: var(--selten); } .t-selten { color: var(--selten); }
+.s-episch { border-left-color: var(--episch); } .t-episch { color: var(--episch); }
+.s-legendaer { border-left-color: var(--legendaer); } .t-legendaer { color: var(--legendaer); }
+.t-gewoehnlich { color: var(--muted); }
+
+.details { margin-top: 14px; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; background: var(--surface-2); }
+.details h4 { margin: 0; font-size: 1.15rem; }
+.details .zeile { color: var(--muted); font-size: .88rem; margin: 2px 0 8px; }
+.details ul { margin: 0 0 10px; padding-left: 18px; }
+.details li { font-size: .93rem; }
+.details .knoepfe { display: flex; flex-wrap: wrap; gap: 8px; }
+.delta { font-size: .9rem; margin: 0 0 10px; }
+.delta .plus { color: var(--heil); font-weight: 700; }
+.delta .minus { color: var(--blut); font-weight: 700; }
+.leer-hinweis { color: var(--muted); font-size: .92rem; margin: 10px 0 0; }
+.kampfwerte { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 12px; font-size: .88rem; color: var(--muted); }
+.kampfwerte b { color: var(--ink); }
+
+/* Chronik */
+.chronik { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px 16px 8px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
+.chronik h2 { margin: 0 0 8px; font-size: 1.25rem; }
+.chronik ol { list-style: none; margin: 0; padding: 0; max-height: 560px; overflow-y: auto; }
+@media (max-width: 880px) { .chronik { position: static; } .chronik ol { max-height: 240px; } }
+.chronik li { padding: 6px 0; border-top: 1px solid var(--line); font-size: .92rem; }
+.chronik li:first-child { border-top: 0; }
+.chronik li.schaden { color: var(--blut); } .chronik li.heil { color: var(--heil); } .chronik li.gold { color: var(--gold); }
+.chronik li.level { color: var(--exp); font-weight: 700; } .chronik li.raum { color: var(--muted); font-weight: 700; padding-top: 10px; }
+
+/* Effekte */
+.zahl { position: fixed; pointer-events: none; font-weight: 800; font-size: 1.7rem; text-shadow: 0 2px 6px var(--schatten); animation: aufsteigen .95s ease-out forwards; z-index: 60; white-space: nowrap; }
+.zahl.treffer { color: var(--blut); } .zahl.heilung { color: var(--heil); } .zahl.krit { font-size: 2.3rem; } .zahl.info { color: var(--fackel); font-size: 1.15rem; }
+@keyframes aufsteigen { 0% { opacity: 0; transform: translate(-50%, 6px) scale(.8); } 15% { opacity: 1; transform: translate(-50%, -6px) scale(1.08); } 100% { opacity: 0; transform: translate(-50%, -56px) scale(1); } }
+.wackeln { animation: wackeln .35s ease; }
+@keyframes wackeln { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-9px) rotate(-3deg); } 45% { transform: translateX(8px) rotate(2deg); } 70% { transform: translateX(-4px); } }
+.erscheinen { animation: erscheinen .5s cubic-bezier(.2,.8,.2,1); }
+@keyframes erscheinen { from { opacity: 0; transform: scale(.6) translateY(16px); } to { opacity: 1; transform: none; } }
+.vignette { position: fixed; inset: 0; pointer-events: none; z-index: 30; opacity: 0; box-shadow: inset 0 0 160px 40px color-mix(in srgb, var(--blut) 75%, transparent); }
+.vignette.an { animation: vignette .5s ease; }
+@keyframes vignette { 0% { opacity: 0; } 25% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Dialoge */
+.schleier { position: fixed; inset: 0; z-index: 40; display: none; align-items: center; justify-content: center; padding: 20px;
+  background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(3px); }
+.schleier.offen { display: flex; }
+.dialog { width: min(480px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 24px 60px var(--schatten);
+  padding: 22px 22px 18px; animation: erscheinen .3s cubic-bezier(.2,.8,.2,1); max-height: calc(100% - 20px); overflow-y: auto; }
+.dialog h2 { margin: 0 0 4px; font-size: 1.6rem; line-height: 1.15; }
+.dialog > p { margin: 6px 0 12px; color: var(--muted); }
+.dialog .knoepfe { display: grid; gap: 8px; margin-top: 14px; }
+.dialog .details { margin-top: 6px; }
+.verkauf { display: grid; gap: 6px; margin-top: 8px; }
+.verkauf .knopf { font-weight: 500; }
+
+/* Start/Ende */
+.buehne-voll { text-align: center; padding: 40px 22px 32px; }
+.buehne-voll .siegel { font-size: 104px; }
+.buehne-voll h2 { font-size: clamp(2rem, 6vw, 3rem); margin: 4px 0 6px; line-height: 1.05; }
+.buehne-voll > p { color: var(--muted); max-width: 48ch; margin: 0 auto 18px; }
+.buehne-voll .knopf { display: inline-flex; justify-content: center; min-width: 240px; }
+.anleitung { text-align: left; max-width: 460px; margin: 0 auto 22px; padding: 0; list-style: none; }
+.anleitung li { padding: 6px 0; border-top: 1px solid var(--line); font-size: .95rem; }
+.anleitung li:first-child { border-top: 0; }
+.rekord { color: var(--gold); font-weight: 700; margin-top: 16px; }
+.statistik { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; max-width: 460px; margin: 0 auto 20px; }
+.statistik div { border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
+.statistik small { display: block; color: var(--muted); font-size: .8rem; }
+.statistik b { font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+.hinweis { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); transform: translateX(-50%);
+  background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 999px; font-weight: 500; z-index: 70; opacity: 0; transition: opacity .2s ease; pointer-events: none; }
+.hinweis.an { opacity: 1; }
+@media (max-width: 560px) { .kopf h1 { font-size: 1.35rem; } .kopf .ort { font-size: .85rem; } .knopf kbd { display: none; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+:root { --set: #1f8a5a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --set: #49d18f; } }
+:root[data-theme="dark"] { --set: #49d18f; }
+.s-set { border-left-color: var(--set); } .t-set { color: var(--set); }
+.chip.elite { border-color: var(--legendaer); color: var(--legendaer); font-weight: 700; }
+.chip.segen { border-color: var(--exp); color: var(--exp); }
+
+/* Hub */
+.hub { padding: 26px 22px 24px; }
+.hub-kopf { text-align: center; margin-bottom: 16px; }
+.hub-kopf h2 { margin: 0; font-size: clamp(1.9rem, 5vw, 2.6rem); line-height: 1.05; }
+.hub-kopf p { margin: 6px auto 0; color: var(--muted); max-width: 52ch; }
+.splitter { display: inline-flex; align-items: baseline; gap: 6px; margin-top: 10px; font-size: 1.05rem; }
+.splitter b { color: var(--exp); font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+.reiter { display: flex; gap: 6px; justify-content: center; margin: 14px 0 18px; flex-wrap: wrap; }
+.reiter button { cursor: pointer; border: 1px solid var(--line); background: none; border-radius: 999px; padding: 6px 16px; font-weight: 700; color: var(--muted); }
+.reiter button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.abschnitt-titel { margin: 18px 0 8px; font-size: 1.15rem; }
+.karten { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 640px) { .karten { grid-template-columns: 1fr; } }
+.karte { cursor: pointer; text-align: left; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); padding: 12px 14px; display: grid; gap: 4px; }
+.karte:hover:not(:disabled) { border-color: var(--fackel); }
+.karte[aria-pressed="true"] { outline: 2px solid var(--fackel); outline-offset: 1px; }
+.karte .gross { font-size: 2.2rem; line-height: 1; }
+.karte b { font-size: 1.1rem; }
+.karte small { color: var(--muted); font-size: .86rem; line-height: 1.35; }
+.karte.gesperrt { opacity: .75; }
+.fluch { display: flex; flex-wrap: wrap; gap: 6px; }
+.fluch button { cursor: pointer; min-width: 44px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-2); padding: 6px 10px; font-weight: 700; }
+.fluch button[aria-pressed="true"] { background: var(--blut); color: #fff7ec; border-color: var(--blut); }
+.fluch button:disabled { opacity: .35; cursor: not-allowed; }
+.fluch-text { color: var(--muted); font-size: .9rem; margin: 6px 0 0; }
+.start-zeile { margin-top: 20px; text-align: center; }
+.start-zeile .knopf { display: inline-flex; min-width: 260px; justify-content: center; }
+.baum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 760px) { .baum { grid-template-columns: 1fr; } }
+.ast { border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--surface-2); display: grid; gap: 8px; align-content: start; }
+.ast h3 { margin: 0; font-size: 1.2rem; }
+.ast > small { color: var(--muted); }
+.knoten { border: 1px solid var(--line); border-radius: 6px; background: var(--surface); padding: 9px 10px; display: grid; gap: 4px; }
+.knoten.schluessel { border-color: var(--exp); border-width: 2px; }
+.knoten b { font-size: .98rem; }
+.knoten small { color: var(--muted); font-size: .84rem; line-height: 1.3; }
+.knoten .zeile2 { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.punkte { display: flex; gap: 3px; }
+.punkte { flex-wrap: wrap; max-width: 140px; }
+.punkte i { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--exp); }
+.punkte i.voll { background: var(--exp); }
+.erfolge { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.erfolge li { display: flex; justify-content: space-between; gap: 10px; border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; background: var(--surface-2); }
+.erfolge li.erreicht { border-color: var(--heil); }
+.erfolge li span { color: var(--muted); font-size: .88rem; }
+.erfolge li.erreicht b::before { content: "✓ "; color: var(--heil); }
+.erfolge li { align-items: center; }
+.erfolge li span.lohn { color: var(--exp); }
+.lohn { color: var(--exp); font-weight: 700; white-space: nowrap; }
+.karte .lohn { white-space: normal; }
+.segen-liste, .set-liste { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.set-liste .chip { border-color: var(--set); color: var(--set); }
+.ereignis { padding: 26px 22px 20px; text-align: center; border-bottom: 1px solid var(--line); }
+.ereignis h2 { margin: 0 0 6px; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+.ereignis p { margin: 0 auto 6px; color: var(--muted); max-width: 52ch; }
+.belohnung-splitter { font-size: 1.2rem; margin: 0 0 16px; }
+.belohnung-splitter b { color: var(--exp); font-size: 1.8rem; }
+
+.fortsetzen { border: 1px solid var(--fackel); border-radius: 8px; padding: 12px 14px; background: var(--surface-2); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.fortsetzen small { color: var(--muted); display: block; }
+.fortsetzen .knoepfe { display: flex; gap: 8px; flex-wrap: wrap; }
+.sortierung { display: flex; gap: 4px; flex-wrap: wrap; }
+.sortierung button { cursor: pointer; border: 1px solid var(--line); background: none; border-radius: 999px; padding: 2px 10px; font-size: .8rem; color: var(--muted); }
+.sortierung button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.unterkopf h3 span { color: var(--muted); font-size: .85rem; font-family: "Alegreya Sans", sans-serif; margin-left: 6px; }
+button.chip { cursor: pointer; font: inherit; font-size: .85rem; }
+.set-boni { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.set-boni li { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; color: var(--muted); }
+.set-boni li.aktiv { border-color: var(--set); color: var(--ink); }
+.set-boni li.aktiv::before { content: "✓ "; color: var(--set); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="vignette" id="vignette"></div>
+<div class="huelle">
+  <header class="kopf">
+    <h1 class="titel">Cursed Descent</h1>
+    <div style="display:flex;align-items:center;gap:14px">
+      <span class="ort" id="ort"></span>
+      <button class="thema-knopf" id="tonKnopf" type="button">Ton an</button>
+      <button class="thema-knopf" id="themaKnopf" type="button">Hell/Dunkel</button>
+    </div>
+  </header>
+  <div class="raster">
+    <div class="links">
+      <main class="tafel" id="arena"></main>
+      <section class="tafel inventar" id="inventar" hidden></section>
+    </div>
+    <aside class="chronik" aria-live="polite">
+      <h2 class="titel">Chronik</h2>
+      <ol id="chronik"></ol>
+    </aside>
+  </div>
+</div>
+<div class="schleier" id="schleier"><div class="dialog" id="dialog" role="dialog" aria-modal="true"></div></div>
+<div class="hinweis" id="hinweis" role="status"></div>
+
+<script>
+// =====================================================================
+//   DATEN
+// =====================================================================
+const ELEMENTE = {
+  feuer: { name: "Feuer", icon: "🔥", vor: "Glut" },
+  eis:   { name: "Eis",   icon: "❄️", vor: "Frost" },
+  blitz: { name: "Blitz", icon: "⚡", vor: "Sturm" },
+  licht: { name: "Licht", icon: "✨", vor: "Sonnen" },
+  gift:  { name: "Gift",  icon: "🧪", vor: "Gift" }
+};
+const ELEMENT_KEYS = Object.keys(ELEMENTE);
+
+const GEGNER = [
+  { name: "Goblin", bild: "👺", schwach: "blitz", stark: "gift", ab: 1 },
+  { name: "Riesenratte", bild: "🐀", schwach: "feuer", stark: null, ab: 1 },
+  { name: "Fledermaus", bild: "🦇", schwach: "licht", stark: null, ab: 1 },
+  { name: "Schleim", bild: "🦠", schwach: "blitz", stark: "gift", ab: 2 },
+  { name: "Skelett", bild: "💀", schwach: "licht", stark: "gift", ab: 2 },
+  { name: "Höhlenspinne", bild: "🕷️", schwach: "feuer", stark: "gift", ab: 3 },
+  { name: "Wolf", bild: "🐺", schwach: "feuer", stark: "eis", ab: 3 },
+  { name: "Ork", bild: "👹", schwach: "eis", stark: "feuer", ab: 4 },
+  { name: "Geist", bild: "👻", schwach: "licht", stark: "gift", ab: 6 },
+  { name: "Feuerechse", bild: "🦎", schwach: "eis", stark: "feuer", ab: 6 },
+  { name: "Skorpion", bild: "🦂", schwach: "eis", stark: "gift", ab: 7 },
+  { name: "Troll", bild: "🧌", schwach: "feuer", stark: "eis", ab: 8 },
+  { name: "Mimik", bild: "📦", schwach: "feuer", stark: "blitz", ab: 9 },
+  { name: "Gargoyle", bild: "🗿", schwach: "blitz", stark: "feuer", ab: 11 },
+  { name: "Steingolem", bild: "🪨", schwach: "blitz", stark: "eis", ab: 12 },
+  { name: "Dunkelelf", bild: "🧝", schwach: "licht", stark: "eis", ab: 14 },
+  { name: "Basilisk", bild: "🐍", schwach: "eis", stark: "gift", ab: 16 }
+];
+const BOSSE = [
+  { name: "Goblinkönig", bild: "👑", schwach: "blitz", stark: "eis", element: "gift", ab: 1 },
+  { name: "Knochenkönig", bild: "☠️", schwach: "licht", stark: "eis", element: "gift", ab: 1 },
+  { name: "Dungeonlord", bild: "😈", schwach: "licht", stark: "feuer", element: "feuer", ab: 1 },
+  { name: "Spinnenkönigin", bild: "🕸️", schwach: "feuer", stark: "gift", element: "gift", ab: 2 },
+  { name: "Lich", bild: "🧟", schwach: "feuer", stark: "eis", element: "eis", ab: 2 },
+  { name: "Schattendrache", bild: "🐉", schwach: "eis", stark: "feuer", element: "feuer", ab: 3 },
+  { name: "Frostriese", bild: "🧊", schwach: "feuer", stark: "eis", element: "eis", ab: 3 },
+  { name: "Sturmgreif", bild: "🦅", schwach: "gift", stark: "blitz", element: "blitz", ab: 4 },
+  { name: "Dämonenfürst", bild: "👿", schwach: "licht", stark: "feuer", element: "feuer", ab: 4 },
+  { name: "Tiefenkrake", bild: "🐙", schwach: "blitz", stark: "eis", element: "eis", ab: 5 },
+  { name: "Sonnenwächter", bild: "🌞", schwach: "gift", stark: "licht", element: "licht", ab: 5 },
+  { name: "Leere-Titan", bild: "🌑", schwach: "licht", stark: "gift", element: "blitz", ab: 6 }
+];
+const MECHANIKEN = {
+  verstaerkung: { name: "Verstärkung", text: "wird alle 4 Runden 15 % stärker" },
+  knochenpanzer: { name: "Knochenpanzer", text: "nimmt unter 50 % Leben 30 % weniger Schaden" },
+  raserei: { name: "Raserei", text: "macht unter 30 % Leben 50 % mehr Schaden" },
+  gift: { name: "Giftbiss", text: "jeder Treffer vergiftet dich 3 Runden lang" },
+  lebensentzug: { name: "Lebensentzug", text: "heilt sich um 30 % seines Schadens" },
+  feueratem: { name: "Feueratem", text: "sein Spezialangriff setzt dich 3 Runden in Brand" },
+  eiseskaelte: { name: "Eiseskälte", text: "schlägt nach dem Spezialangriff sofort noch einmal zu" },
+  sturmflug: { name: "Sturmflug", text: "greift zu 25 % ein weiteres Mal an" },
+  hoellenpakt: { name: "Höllenpakt", text: "15 % deines Schadens trifft dich selbst" },
+  tentakel: { name: "Tentakel", text: "greift zweimal mit je 60 % Schaden an" },
+  blendung: { name: "Blendung", text: "deine Angriffe verfehlen ihn zu 20 %" },
+  leere: { name: "Leere", text: "ignoriert die Hälfte deines Schutzes" }
+};
+const BOSS_MECHANIK = { "Goblinkönig": "verstaerkung", "Knochenkönig": "knochenpanzer", "Dungeonlord": "raserei", "Spinnenkönigin": "gift",
+  "Lich": "lebensentzug", "Schattendrache": "feueratem", "Frostriese": "eiseskaelte", "Sturmgreif": "sturmflug",
+  "Dämonenfürst": "hoellenpakt", "Tiefenkrake": "tentakel", "Sonnenwächter": "blendung", "Leere-Titan": "leere" };
+const ELITE = [
+  { key: "flink", name: "Flink", text: "greift zweimal pro Runde an" },
+  { key: "zaeh", name: "Zäh", text: "hat 80 % mehr Leben" },
+  { key: "vampir", name: "Vampirisch", text: "heilt sich um die Hälfte seines Schadens" },
+  { key: "gepanzert", name: "Gepanzert", text: "nimmt 30 % weniger Schaden" },
+  { key: "wuetend", name: "Wütend", text: "macht 40 % mehr Schaden" }
+];
+
+const SLOTS = [
+  { key: "waffe", name: "Waffe", icon: "🗡️" }, { key: "schild", name: "Schild", icon: "🛡️" },
+  { key: "helm", name: "Helm", icon: "🪖" }, { key: "ruestung", name: "Rüstung", icon: "🧥" },
+  { key: "handschuhe", name: "Handschuhe", icon: "🧤" }, { key: "stiefel", name: "Stiefel", icon: "🥾" },
+  { key: "guertel", name: "Gürtel", icon: "🪢" }, { key: "amulett", name: "Amulett", icon: "📿" },
+  { key: "ring", name: "Ring", icon: "💍" }, { key: "talisman", name: "Talisman", icon: "🔮" }
+];
+const BASIS = {
+  waffe: ["Dolch", "Kurzschwert", "Keule", "Streitaxt", "Säbel", "Langschwert", "Kriegshammer", "Zweihänder"],
+  schild: ["Holzschild", "Buckler", "Rundschild", "Wappenschild", "Turmschild"],
+  helm: ["Lederkappe", "Kettenhaube", "Eisenhelm", "Hörnerhelm", "Visierhelm"],
+  ruestung: ["Lederwams", "Gambeson", "Schuppenpanzer", "Kettenhemd", "Plattenpanzer"],
+  handschuhe: ["Lederhandschuhe", "Fäustlinge", "Kettenhandschuhe", "Panzerhandschuhe"],
+  stiefel: ["Sandalen", "Lederstiefel", "Reiterstiefel", "Eisenstiefel"],
+  guertel: ["Strickgürtel", "Ledergürtel", "Nietengürtel", "Kriegsgürtel"],
+  amulett: ["Holzamulett", "Knochenamulett", "Silberamulett", "Runenamulett"],
+  ring: ["Kupferring", "Silberring", "Goldring", "Siegelring"],
+  talisman: ["Hasenpfote", "Glücksmünze", "Schädelfetisch", "Kristallsplitter"]
+};
+const SLOT_WERTE = {
+  waffe: { art: "angriff", werte: [3, 2.2, 1.2] }, schild: { art: "schutz", werte: [1, 0.8, 0.5] },
+  helm: { art: "schutz", werte: [1, 0.6, 0.4] }, ruestung: { art: "schutz", werte: [2, 1.0, 0.6] },
+  handschuhe: { art: "angriff", werte: [1, 0.6, 0.4] }, stiefel: { art: "schutz", werte: [1, 0.5, 0.4] },
+  guertel: { art: "schutz", werte: [0.5, 0.4, 0.3] }
+};
+const SELTENHEIT = [
+  { key: "gewoehnlich", name: "Gewöhnlich", mult: 1.0, effekte: 0, wert: 1 },
+  { key: "selten", name: "Selten", mult: 1.25, effekte: 1, wert: 2 },
+  { key: "episch", name: "Episch", mult: 1.55, effekte: 2, wert: 4 },
+  { key: "legendaer", name: "Legendär", mult: 2.0, effekte: 3, wert: 8 }
+];
+const EFFEKT_POOL = {
+  waffe: ["krit", "lebensraub", "angriff"], schild: ["block", "resistenz", "schutz", "dornen"],
+  helm: ["leben", "resistenz", "krit", "schutz"], ruestung: ["leben", "resistenz", "dornen", "schutz"],
+  handschuhe: ["krit", "angriff", "lebensraub"], stiefel: ["block", "leben", "resistenz"],
+  guertel: ["leben", "schutz", "resistenz"], amulett: ["resistenz", "leben", "lebensraub", "krit"],
+  ring: ["krit", "lebensraub", "angriff", "resistenz", "leben", "block"], talisman: ["krit", "dornen", "block", "lebensraub", "angriff"]
+};
+const NAMEN_ZUSATZ = { krit: "der Präzision", lebensraub: "des Blutdursts", angriff: "der Wut", schutz: "der Standhaftigkeit",
+  block: "des Wächters", dornen: "der Dornen", leben: "der Ausdauer", resistenz: "des Bannes" };
+
+const SETS = {
+  glut: { name: "Glutwächter", slots: ["waffe", "helm", "ruestung", "handschuhe", "stiefel", "amulett"], effekt: "krit",
+    boni: ["+20 % Feuer-Resistenz", "Feuerwaffen machen 30 % mehr Schaden", "Treffer setzen den Gegner 3 Runden in Brand"] },
+  frost: { name: "Frostwacht", slots: ["schild", "helm", "ruestung", "guertel", "stiefel", "ring"], effekt: "block",
+    boni: ["+15 % Block", "+20 % Eis-Resistenz und +25 % Schutz", "Jeder 4. Treffer gegen dich wird komplett abgewehrt"] },
+  blut: { name: "Blutjäger", slots: ["waffe", "handschuhe", "amulett", "ring", "talisman", "guertel"], effekt: "lebensraub",
+    boni: ["+8 % Lebensraub", "Unter 30 % Leben doppelter Lebensraub", "Jeder Sieg heilt 15 % deines Max-Lebens"] },
+  schatten: { name: "Schattenläufer", slots: ["waffe", "handschuhe", "stiefel", "helm", "ring", "talisman"], effekt: "krit",
+    boni: ["+10 % Krit", "Krits machen 225 % statt 175 % Schaden", "Nach einem Krit folgt ein zweiter Schlag mit halbem Schaden"] },
+  dorn: { name: "Dornenkönig", slots: ["schild", "ruestung", "helm", "guertel", "amulett", "talisman"], effekt: "dornen",
+    boni: ["Dornen +50 %", "+25 % Schutz", "Gegner verlieren bei jedem Angriff 5 % ihres Max-Lebens"] }
+};
+
+const SEGEN = [
+  { key: "blutpakt", name: "Blutpakt", gut: "+20 % Lebensraub", schlecht: "Tränke heilen nicht mehr" },
+  { key: "glaskanone", name: "Glaskanone", gut: "+40 % Angriff", schlecht: "−30 % Max-Leben" },
+  { key: "gier", name: "Gier", gut: "Doppeltes Gold und doppelte Dropchance", schlecht: "Gegner machen 25 % mehr Schaden" },
+  { key: "alchemist", name: "Alchemist", gut: "Tränke heilen doppelt so viel", schlecht: "Du findest und kaufst keine Tränke mehr" },
+  { key: "berserker", name: "Berserker", gut: "+5 % Schaden je fehlende 10 % Leben", schlecht: "Dein Schutz wird halbiert" },
+  { key: "eisenhaut", name: "Eiserne Haut", gut: "+60 % Schutz", schlecht: "−20 % Angriff" },
+  { key: "elementbund", name: "Elementarbund", gut: "Schwächen treffen mit 220 % statt 160 %", schlecht: "Stärken treffen nur mit 20 % statt 50 %" },
+  { key: "seelenernte", name: "Seelenernte", gut: "+75 % Seelensplitter am Ende", schlecht: "Gegner haben 20 % mehr Leben" },
+  { key: "wagemut", name: "Krone des Wagemuts", gut: "+25 % Krit", schlecht: "Du kannst nicht mehr blocken" },
+  { key: "opfer", name: "Opfergabe", gut: "Sofort ein legendärer Gegenstand", schlecht: "−15 % Max-Leben" }
+];
+
+const KLASSEN = [
+  { key: "krieger", name: "Krieger", bild: "⚔️", kosten: 0, text: "120 Leben, Kurzschwert, Schild und Wams. Robust und verzeiht Fehler." },
+  { key: "schurke", name: "Schurke", bild: "🗡️", kosten: 120, text: "95 Leben, +12 % Krit, Dolch der Präzision. Hoher Schaden, wenig Schutz." },
+  { key: "magier", name: "Magier", bild: "🔮", kosten: 250, text: "85 Leben, +25 % Elementschaden, startet mit Glut- und Froststab." }
+];
+
+// Jede Stufe kostet 30 % mehr als die vorige
+const steigend = (basis) => (st) => Math.round(basis * Math.pow(1.3, st));
+// Für Fähigkeiten, die nur bei Stufe 3, 6 und 10 einen ganzen Punkt geben
+const stufenBonus = (st) => [3, 6, 10].filter((x) => st >= x).length;
+
+const SKILLS = [
+  { id: "kraft", ast: "krieger", name: "Kraft", max: 10, kosten: steigend(10), text: (st) => `+${2 * st} Start-Angriff` },
+  { id: "praezision", ast: "krieger", name: "Präzision", max: 10, kosten: steigend(12), text: (st) => `+${st} % Krit` },
+  { id: "elementar", ast: "krieger", name: "Elementarkunde", max: 10, kosten: steigend(15), text: (st) => `+${3 * st} % Elementschaden` },
+  { id: "erstschlag", ast: "krieger", name: "Erstschlag", max: 1, schluessel: true, braucht: 15, kosten: () => 450, text: () => "Der erste Angriff jedes Kampfes ist immer kritisch" },
+  { id: "zaehigkeit", ast: "waechter", name: "Zähigkeit", max: 10, kosten: steigend(10), text: (st) => `+${10 * st} Max-Leben` },
+  { id: "heilkunde", ast: "waechter", name: "Heilkunde", max: 10, kosten: steigend(12), text: (st) => `Tränke heilen +${2 * st} %` },
+  { id: "guertel", ast: "waechter", name: "Breiter Gürtel", max: 10, kosten: steigend(15), text: (st) => `+${stufenBonus(st)} Trankplatz (je einer bei Stufe 3, 6 und 10)` },
+  { id: "zweitesleben", ast: "waechter", name: "Zweites Leben", max: 1, schluessel: true, braucht: 15, kosten: () => 500, text: () => "Einmal pro Lauf überlebst du den Tod mit 30 % Leben" },
+  { id: "spuersinn", ast: "abenteurer", name: "Spürsinn", max: 10, kosten: steigend(12), text: (st) => `+${(1.5 * st).toLocaleString("de-DE")} % Dropchance` },
+  { id: "vorrat", ast: "abenteurer", name: "Vorrat", max: 10, kosten: steigend(15), text: (st) => `+${stufenBonus(st)} Trank zu Beginn (je einer bei Stufe 3, 6 und 10)` },
+  { id: "feilschen", ast: "abenteurer", name: "Feilschen", max: 10, kosten: steigend(10), text: (st) => `Händler ${3 * st} % billiger` },
+  { id: "erbstueck", ast: "abenteurer", name: "Erbstück", max: 1, schluessel: true, braucht: 15, kosten: () => 450, text: () => "Jeder Lauf beginnt mit einem epischen Gegenstand" }
+];
+const AESTE = { krieger: "Krieger", waechter: "Wächter", abenteurer: "Abenteurer" };
+
+// Gestufte Erfolge: Jedes Ziel verdoppelt sich zur nächsten Stufe, die Belohnung wächst mit.
+const verdoppeln = (start, anzahl = 10) => Array.from({ length: anzahl }, (_, i) => start * 2 ** i);
+const ERFOLGE = [
+  { id: "monster", name: "Monsterjäger", stat: "monster", ziele: verdoppeln(5), lohn: 3, text: (z) => `Besiege insgesamt ${z} Gegner` },
+  { id: "bosse", name: "Bossjäger", stat: "bosse", ziele: verdoppeln(1), lohn: 6, text: (z) => `Besiege insgesamt ${z} ${z === 1 ? "Boss" : "Bosse"}` },
+  { id: "elite", name: "Elitejäger", stat: "elite", ziele: verdoppeln(3), lohn: 4, text: (z) => `Besiege insgesamt ${z} Elite-Gegner` },
+  { id: "raum", name: "Tiefgang", stat: "raum", ziele: verdoppeln(5, 6), lohn: 8, text: (z) => `Erreiche Raum ${z} in einem Lauf` },
+  { id: "gold", name: "Drachenhort", stat: "gold", ziele: verdoppeln(100), lohn: 3, text: (z) => `Sammle insgesamt ${z.toLocaleString("de-DE")} Gold` },
+  { id: "legende", name: "Legendensammler", stat: "legendaer", ziele: verdoppeln(1, 8), lohn: 5, text: (z) => `Finde insgesamt ${z} legendäre ${z === 1 ? "Gegenstand" : "Gegenstände"}` },
+  { id: "setteile", name: "Sammler", stat: "setteile", ziele: verdoppeln(2, 8), lohn: 4, text: (z) => `Finde insgesamt ${z} Set-Teile` },
+  { id: "setvoll", name: "Vollendet", stat: "setMax", ziele: [2, 4, 6], lohn: 15, text: (z) => `Trage ${z} Teile eines Sets gleichzeitig` },
+  { id: "segen", name: "Gesegnet", stat: "segen", ziele: verdoppeln(2, 8), lohn: 4, text: (z) => `Nimm insgesamt ${z} Segen an` },
+  { id: "ereignis", name: "Neugierig", stat: "ereignisse", ziele: verdoppeln(3, 8), lohn: 3, text: (z) => `Erlebe insgesamt ${z} Ereignisse` },
+  { id: "ohnetrank", name: "Ohne Netz", stat: "ohneTrank", ziele: verdoppeln(1, 8), lohn: 6, text: (z) => `Besiege ${z} ${z === 1 ? "Boss" : "Bosse"}, ohne im Kampf einen Trank zu trinken` },
+  { id: "fluch", name: "Verflucht", stat: "fluch", ziele: [1, 2, 3, 4, 5], lohn: 15, text: (z) => `Besiege einen Boss auf Fluchstufe ${z}` },
+  { id: "laeufe", name: "Unermüdlich", stat: "laeufe", ziele: verdoppeln(3, 8), lohn: 4, text: (z) => `Beende ${z} Läufe` }
+];
+const erfolgLohn = (e, stufe) => e.lohn * (stufe + 1);
+
+const BEUTEL_PLAETZE = 20;
+const MAX_FLUCH = 5;
+
+// Zufall: normal Math.random, im Tages-Dungeon ein Generator mit festem Startwert
+let rnd = Math.random;
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function tagesSchluessel() { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; }
+function tagesSeed() { const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); }
+const zufall = (a, b) => a + Math.floor(rnd() * (b - a + 1));
+const wahl = (liste) => liste[zufall(0, liste.length - 1)];
+const $ = (id) => document.getElementById(id);
+const elText = (e) => `${ELEMENTE[e].icon} ${ELEMENTE[e].name}`;
+
+let s = null, meta, beschaeftigt = false, idZaehler = 0, hubReiter = "lauf", hubKlasse = "krieger", hubFluch = 0;
+
+// =====================================================================
+//   META-FORTSCHRITT (bleibt zwischen den Läufen erhalten)
+// =====================================================================
+function metaLaden() {
+  const leer = { splitter: 0, skills: {}, klassen: { krieger: true }, fluchMax: 0, erfolgStufe: {}, stats: {}, rekord: 0, laeufe: 0, bestiarium: {}, tagesBest: {} };
+  try { return Object.assign(leer, JSON.parse(localStorage.getItem("miniDungeonMeta3")) || {}); } catch (e) { return leer; }
+}
+// Laufstand speichern, damit Neuladen den Lauf nicht beendet
+function laufSpeichern() { if (!s || s.phase === "ende") return; try { localStorage.setItem("miniDungeonLauf", JSON.stringify({ s, idZaehler })); } catch (e) {} }
+function laufLaden() { try { return JSON.parse(localStorage.getItem("miniDungeonLauf")); } catch (e) { return null; } }
+function laufLoeschen() { try { localStorage.removeItem("miniDungeonLauf"); } catch (e) {} }
+function laufFortsetzen() {
+  const daten = laufLaden();
+  if (!daten) return;
+  s = daten.s; idZaehler = Math.max(daten.idZaehler || 0, 1000);
+  rnd = s.tages ? mulberry32(s.seed + s.ziel * 31) : Math.random;
+  $("chronik").innerHTML = "";
+  eintrag(`Lauf fortgesetzt vor Raum ${s.ziel}.`, "raum");
+  $("inventar").hidden = false;
+  s.phase = "lager";
+  zeichneLager("Lauf fortgesetzt", "Du bist zurück im Lager. Der nächste Raum wartet.");
+  zeichneInventar();
+}
+function bestiariumEintrag(g) { const k = g.art || g.name; meta.bestiarium[k] = (meta.bestiarium[k] || 0) + 1; metaSpeichern(); }
+
+function metaSpeichern() { try { localStorage.setItem("miniDungeonMeta3", JSON.stringify(meta)); } catch (e) {} }
+const skill = (id) => (s && s.tages ? 0 : meta.skills[id] || 0);
+const astPunkte = (ast) => SKILLS.filter((k) => k.ast === ast && !k.schluessel).reduce((a, k) => a + skill(k.id), 0);
+const hatSegen = (key) => s && s.segen.includes(key);
+
+// Zählt eine Statistik hoch (oder setzt einen Höchstwert) und prüft danach die Erfolge
+function statPlus(name, menge = 1) { meta.stats[name] = (meta.stats[name] || 0) + menge; erfolgePruefen(); }
+function statMax(name, wert) { if (wert > (meta.stats[name] || 0)) { meta.stats[name] = wert; erfolgePruefen(); } }
+
+function erfolgePruefen() {
+  if (s) {
+    if (s.raum > (meta.stats.raum || 0)) meta.stats.raum = s.raum;
+    const zahl = Object.values(setZaehlen());
+    if (zahl.length) meta.stats.setMax = Math.max(meta.stats.setMax || 0, ...zahl);
+  }
+  meta.stats.laeufe = Math.max(meta.stats.laeufe || 0, 0);
+  let geaendert = false;
+  ERFOLGE.forEach((e) => {
+    let stufe = meta.erfolgStufe[e.id] || 0;
+    while (stufe < e.ziele.length && (meta.stats[e.stat] || 0) >= e.ziele[stufe]) {
+      const lohn = erfolgLohn(e, stufe);
+      meta.splitter += lohn;
+      stufe += 1;
+      geaendert = true;
+      hinweis(`Erfolg: ${e.name} Stufe ${stufe} (+${lohn} Seelensplitter)`);
+      if (s) eintrag(`Erfolg: ${e.name} Stufe ${stufe} – ${e.text(e.ziele[stufe - 1])} (+${lohn} Seelensplitter).`, "level");
+    }
+    meta.erfolgStufe[e.id] = stufe;
+  });
+  metaSpeichern();
+}
+
+// =====================================================================
+//   GEGENSTÄNDE
+// =====================================================================
+function seltenheitsGewichte(raum, boss) {
+  if (boss) return [0, 50, 35 + 0.5 * raum, 10 + 0.3 * raum];
+  return [Math.max(70 - 0.5 * raum, 20), 22 + 0.5 * raum, 6 + 0.3 * raum, 2 + 0.1 * raum];
+}
+function seltenheitWuerfeln(raum, boss) {
+  const g = seltenheitsGewichte(raum, boss);
+  let r = rnd() * g.reduce((a, b) => a + b, 0), i = 0;
+  while (i < 3 && r > g[i]) { r -= g[i]; i++; }
+  return i;
+}
+
+function effektErzeugen(typ, stufe) {
+  switch (typ) {
+    case "krit": return { typ, wert: 4 + stufe + zufall(0, 4) };
+    case "lebensraub": return { typ, wert: 5 + stufe + zufall(0, 4) };
+    case "angriff": return { typ, wert: 1 + stufe + zufall(0, 2) };
+    case "schutz": return { typ, wert: 1 + Math.ceil(stufe * 0.8) + zufall(0, 1) };
+    case "block": return { typ, wert: 8 + zufall(0, 7) };
+    case "dornen": return { typ, wert: 2 + 2 * stufe + zufall(0, 2) };
+    case "leben": return { typ, wert: 8 + 6 * stufe + zufall(0, 5) };
+    case "resistenz": return { typ, wert: 20 + zufall(0, 15), element: wahl(ELEMENT_KEYS) };
+  }
+}
+
+function gegenstandBauen(slot, selIndex, stufe, setKey = null) {
+  const sel = SELTENHEIT[selIndex];
+  const basisListe = BASIS[slot];
+  const tier = zufall(0, Math.min(basisListe.length - 1, stufe));
+  const it = { id: ++idZaehler, slot, seltenheit: setKey ? "set" : sel.key, set: setKey, stufe, angriff: 0, schutz: 0, element: null, effekte: [] };
+  const sw = SLOT_WERTE[slot];
+  if (sw) {
+    const [b, ps, pb] = sw.werte;
+    it[sw.art] = Math.max(1, Math.round((b + ps * stufe + pb * tier) * sel.mult));
+  }
+  if (slot === "waffe") {
+    if (setKey === "glut") it.element = "feuer";
+    else if (!setKey && rnd() < 0.35 + 0.15 * selIndex) it.element = wahl(ELEMENT_KEYS);
+  }
+  const pool = [...EFFEKT_POOL[slot]];
+  if (setKey) {
+    const fest = SETS[setKey].effekt;
+    it.effekte.push(effektErzeugen(fest, stufe));
+    const i = pool.indexOf(fest); if (i >= 0) pool.splice(i, 1);
+  }
+  const anzahl = sel.effekte + (sw ? 0 : 1) - (setKey ? 1 : 0);
+  for (let i = 0; i < anzahl && pool.length; i++) it.effekte.push(effektErzeugen(pool.splice(zufall(0, pool.length - 1), 1)[0], stufe));
+
+  const basis = basisListe[tier];
+  if (setKey) it.name = `${SETS[setKey].name}-${basis}`;
+  else {
+    const vor = it.element ? ELEMENTE[it.element].vor + "-" : "";
+    it.name = vor + basis + (it.effekte.length ? " " + NAMEN_ZUSATZ[it.effekte[0].typ] : "");
+  }
+  it.wert = Math.round((10 + 8 * stufe) * (setKey ? 5 : sel.wert));
+  return it;
+}
+
+function gegenstandErzeugen(raum, quelle = "normal") {
+  const it = gegenstandWuerfeln(raum, quelle);
+  if (it.set) statPlus("setteile");
+  if (it.seltenheit === "legendaer") statPlus("legendaer");
+  return it;
+}
+
+function gegenstandWuerfeln(raum, quelle) {
+  const stufe = Math.floor(raum / 5) + 1;
+  const setChance = quelle === "boss" ? 0.25 : quelle === "elite" ? 0.1 : 0.03;
+  if (rnd() < setChance) {
+    const setKey = wahl(Object.keys(SETS));
+    return gegenstandBauen(wahl(SETS[setKey].slots), 2, stufe, setKey);
+  }
+  const it = gegenstandBauen(wahl(SLOTS).key, seltenheitWuerfeln(raum, quelle !== "normal"), stufe);
+  return it;
+}
+
+function effektText(e) {
+  switch (e.typ) {
+    case "krit": return `+${e.wert} % kritische Trefferchance`;
+    case "lebensraub": return `${e.wert} % des Schadens als Leben zurück`;
+    case "angriff": return `+${e.wert} Angriff`;
+    case "schutz": return `+${e.wert} zusätzlicher Schutz`;
+    case "block": return `${e.wert} % Chance, Treffer zu halbieren`;
+    case "dornen": return `${e.wert} Schaden zurück an Angreifer`;
+    case "leben": return `+${e.wert} Max-Leben`;
+    case "resistenz": return `${e.wert} % weniger ${elText(e.element)}-Schaden`;
+  }
+}
+function kurzwert(it) {
+  if (it.angriff) return `+${it.angriff} Angriff${it.element ? " " + ELEMENTE[it.element].icon : ""}`;
+  if (it.schutz) return `+${it.schutz} Schutz`;
+  if (!it.effekte.length) return "";
+  return effektText(it.effekte[0]).replace(" kritische Trefferchance", " Krit").replace(" des Schadens als Leben zurück", " Lebensraub")
+    .replace(" Chance, Treffer zu halbieren", " Block").replace(" Schaden zurück an Angreifer", " Dornen").replace(" zusätzlicher Schutz", " Schutz");
+}
+function seltenheitsName(it) { return it.set ? `Set: ${SETS[it.set].name}` : SELTENHEIT.find((q) => q.key === it.seltenheit).name; }
+
+// =====================================================================
+//   WERTE (Grundwerte + Skillbaum + Klasse + Ausrüstung + Sets + Segen)
+// =====================================================================
+function setZaehlen(ausr = s.ausr) {
+  const zahl = {};
+  Object.values(ausr).forEach((it) => { if (it && it.set) zahl[it.set] = (zahl[it.set] || 0) + 1; });
+  return zahl;
+}
+const setStufe = (zahl, key) => Math.floor((zahl[key] || 0) / 2); // 0..3 aktive Boni
+
+function maxTraenke() { return 5 + stufenBonus(skill("guertel")); }
+
+function werte(ausr = s.ausr) {
+  const w = { angriff: s.angriffBasis + 2 * skill("kraft"), schutz: 0, maxLeben: s.maxLebenBasis + 10 * skill("zaehigkeit"),
+    krit: 5 + skill("praezision") + (s.klasse === "schurke" ? 12 : 0), lebensraub: 0, dornen: 0, block: 0, res: {}, element: null,
+    elementMult: 1 + 0.03 * skill("elementar") + (s.klasse === "magier" ? 0.25 : 0), kritMult: 1.75, schwachF: 1.6, starkF: 0.5 };
+  ELEMENT_KEYS.forEach((k) => (w.res[k] = 0));
+  Object.values(ausr).forEach((it) => {
+    if (!it) return;
+    w.angriff += it.angriff; w.schutz += it.schutz;
+    if (it.element) w.element = it.element;
+    it.effekte.forEach((e) => {
+      if (e.typ === "resistenz") w.res[e.element] += e.wert;
+      else if (e.typ === "leben") w.maxLeben += e.wert;
+      else w[e.typ] += e.wert;
+    });
+  });
+
+  const z = setZaehlen(ausr);
+  if (setStufe(z, "glut") >= 1) w.res.feuer += 20;
+  if (setStufe(z, "glut") >= 2 && w.element === "feuer") w.elementMult += 0.3;
+  if (setStufe(z, "frost") >= 1) w.block += 15;
+  if (setStufe(z, "frost") >= 2) { w.res.eis += 20; w.schutz = Math.round(w.schutz * 1.25); }
+  if (setStufe(z, "blut") >= 1) w.lebensraub += 8;
+  if (setStufe(z, "schatten") >= 1) w.krit += 10;
+  if (setStufe(z, "schatten") >= 2) w.kritMult = 2.25;
+  if (setStufe(z, "dorn") >= 1) w.dornen = Math.round(w.dornen * 1.5);
+  if (setStufe(z, "dorn") >= 2) w.schutz = Math.round(w.schutz * 1.25);
+
+  if (hatSegen("blutpakt")) w.lebensraub += 20;
+  if (hatSegen("glaskanone")) { w.angriff = Math.round(w.angriff * 1.4); w.maxLeben = Math.round(w.maxLeben * 0.7); }
+  if (hatSegen("berserker")) w.schutz = Math.round(w.schutz * 0.5);
+  if (hatSegen("eisenhaut")) { w.schutz = Math.round(w.schutz * 1.6); w.angriff = Math.round(w.angriff * 0.8); }
+  if (hatSegen("elementbund")) { w.schwachF = 2.2; w.starkF = 0.2; }
+  if (hatSegen("wagemut")) w.krit += 25;
+  if (hatSegen("opfer")) w.maxLeben = Math.round(w.maxLeben * 0.85);
+
+  w.krit = Math.min(w.krit, 60);
+  w.block = hatSegen("wagemut") ? 0 : Math.min(w.block, 45);
+  w.lebensraub = Math.min(w.lebensraub, 40);
+  ELEMENT_KEYS.forEach((k) => (w.res[k] = Math.min(w.res[k], 60)));
+  w.z = z;
+  return w;
+}
+
+function vergleich(it) {
+  const alt = werte(), neu = werte({ ...s.ausr, [it.slot]: it });
+  const teile = [];
+  const feld = (name, a, b, einheit = "") => { const d = b - a; if (d) teile.push(`<span class="${d > 0 ? "plus" : "minus"}">${d > 0 ? "+" : ""}${d}${einheit} ${name}</span>`); };
+  feld("Angriff", alt.angriff, neu.angriff); feld("Schutz", alt.schutz, neu.schutz); feld("Max-Leben", alt.maxLeben, neu.maxLeben);
+  feld("Krit", alt.krit, neu.krit, " %"); feld("Lebensraub", alt.lebensraub, neu.lebensraub, " %");
+  feld("Block", alt.block, neu.block, " %"); feld("Dornen", alt.dornen, neu.dornen);
+  ELEMENT_KEYS.forEach((k) => feld(`${ELEMENTE[k].icon}-Resistenz`, alt.res[k], neu.res[k], " %"));
+  if (alt.element !== neu.element) teile.push(`Element: ${neu.element ? elText(neu.element) : "keins"}`);
+  if (it.set) {
+    const vorher = setZaehlen()[it.set] || 0, nachher = setZaehlen({ ...s.ausr, [it.slot]: it })[it.set] || 0;
+    if (nachher !== vorher) teile.push(`<span class="t-set">${SETS[it.set].name} ${nachher}/6</span>`);
+  }
+  return teile.length ? teile.join(" · ") : "keine Änderung";
+}
+function istBesser(it) {
+  const alt = s.ausr[it.slot];
+  if (!alt) return true;
+  const pkt = (x) => x.angriff * 2 + x.schutz * 2 + x.effekte.length * 3 + (x.set ? 6 : SELTENHEIT.findIndex((q) => q.key === x.seltenheit) * 2);
+  return pkt(it) > pkt(alt);
+}
+
+// =====================================================================
+//   LAUF STARTEN
+// =====================================================================
+function startGegenstand(slot, name, werteObj) {
+  return Object.assign({ id: ++idZaehler, slot, seltenheit: "gewoehnlich", set: null, stufe: 1, angriff: 0, schutz: 0, element: null, effekte: [], name, wert: 5 }, werteObj);
+}
+
+function laufStarten(klasse, fluch, tages = false) {
+  laufLoeschen();
+  if (tages) { klasse = "krieger"; fluch = 0; }
+  s = {
+    klasse, fluch, tages, seed: tagesSeed(), sortierung: "neu", gift: 0, brennen: 0, leben: 0, maxLebenBasis: 100, angriffBasis: 10, level: 1, exp: 0, gold: 0,
+    traenke: 2 + stufenBonus(skill("vorrat")), ausr: Object.fromEntries(SLOTS.map((sl) => [sl.key, null])), beutel: [],
+    raum: 1, ziel: 1, bosse: 0, elite: 0, gegner: null, naechster: null, runde: 0, phase: "lager",
+    auswahl: null, trainings: 0, segen: [], zweitesLebenGenutzt: false, trefferZaehler: 0
+  };
+  if (tages) s.traenke = 2;
+  if (klasse === "krieger") {
+    s.maxLebenBasis = 120; s.angriffBasis = 11;
+    s.ausr.waffe = startGegenstand("waffe", "Kurzschwert", { angriff: 6 });
+    s.ausr.schild = startGegenstand("schild", "Holzschild", { schutz: 2 });
+    s.ausr.ruestung = startGegenstand("ruestung", "Lederwams", { schutz: 3 });
+  } else if (klasse === "schurke") {
+    s.maxLebenBasis = 95;
+    s.ausr.waffe = startGegenstand("waffe", "Dolch der Präzision", { angriff: 5, effekte: [{ typ: "krit", wert: 6 }] });
+    s.ausr.stiefel = startGegenstand("stiefel", "Lederstiefel", { schutz: 1 });
+  } else {
+    s.maxLebenBasis = 85; s.angriffBasis = 8;
+    s.ausr.waffe = startGegenstand("waffe", "Glutstab", { angriff: 6, element: "feuer" });
+    s.beutel.push(startGegenstand("waffe", "Froststab", { angriff: 6, element: "eis" }));
+    s.ausr.amulett = startGegenstand("amulett", "Holzamulett der Ausdauer", { effekte: [{ typ: "leben", wert: 10 }] });
+  }
+  if (skill("erbstueck")) {
+    const it = gegenstandBauen(wahl(SLOTS).key, 2, 1);
+    s.beutel.push(it);
+  }
+  s.leben = werte().maxLeben;
+  rnd = tages ? mulberry32(s.seed) : Math.random;
+  meta.laeufe += 1; metaSpeichern();
+  $("chronik").innerHTML = "";
+  eintrag(`Neuer Lauf als ${KLASSEN.find((k) => k.key === klasse).name}${fluch ? `, Fluchstufe ${fluch}` : ""}.`, "raum");
+  if (tages) eintrag("Tages-Dungeon: Heute ist der Dungeon für alle gleich. Skills sind ausgeschaltet.", "gold");
+  if (skill("erbstueck")) eintrag("Das Erbstück deiner Ahnen liegt in deinem Beutel.", "gold");
+  $("inventar").hidden = false;
+  s.naechster = gegnerErzeugen(1);
+  betreteRaum();
+}
+
+// =====================================================================
+//   GEGNER UND RÄUME
+// =====================================================================
+function gegnerErzeugen(raum) {
+  if (s.tages) rnd = mulberry32(s.seed + raum * 7919);
+  const k = 1 + 0.025 * raum + 0.0006 * raum * raum;
+  const kl = (1 + 0.15 * s.fluch) * (hatSegen("seelenernte") ? 1.2 : 1);
+  const ks = (1 + 0.1 * s.fluch) * (hatSegen("gier") ? 1.25 : 1);
+  if (raum % 5 === 0) {
+    const stufe = Math.floor(raum / 5);
+    const b = wahl(BOSSE.filter((x) => x.ab <= stufe));
+    return { ...b, art: b.name, mechanik: BOSS_MECHANIK[b.name], boss: true, stufe, elite: null, leben: Math.round((120 + 85 * (stufe - 1)) * k * kl),
+      schaden: Math.round((14 + 7 * (stufe - 1)) * k * ks), spezial: Math.round((24 + 10 * (stufe - 1)) * k * ks), exp: 100 * stufe, gold: 0 };
+  }
+  if (raum > 2 && rnd() < 0.15) return { ereignis: wahl(["schrein", "truhe", "brunnen", "spieltisch"]) };
+  const g = wahl(GEGNER.filter((x) => x.ab <= raum));
+  const gegner = { ...g, art: g.name, element: null, boss: false, stufe: 0, elite: null, leben: Math.round((22 + 7 * raum) * k * kl),
+    schaden: Math.round((4 + 2 * raum) * k * ks), spezial: 0, exp: 10 * raum, gold: zufall(4, 10) + raum };
+  if (raum >= 3 && rnd() < 0.15) {
+    const e = wahl(ELITE);
+    gegner.elite = e.key;
+    gegner.name = `${g.name} (${e.name})`;
+    if (e.key === "zaeh") gegner.leben = Math.round(gegner.leben * 1.8);
+    if (e.key === "wuetend") gegner.schaden = Math.round(gegner.schaden * 1.4);
+    gegner.exp *= 2; gegner.gold *= 2;
+  }
+  return gegner;
+}
+
+function betreteRaum() {
+  s.raum = s.ziel;
+  erfolgePruefen();
+  if (s.naechster.ereignis) { s.phase = "ereignis"; zeichneEreignis(s.naechster.ereignis); zeichneInventar(); return; }
+  s.gegner = s.naechster;
+  s.gegner.maxLeben = s.gegner.leben;
+  s.runde = 0; s.ersterAngriff = true; s.brand = 0; s.trankImKampf = false; s.gift = 0; s.brennen = 0;
+  s.phase = "kampf";
+  eintrag(`Raum ${s.raum}: ${s.gegner.boss ? "Boss " : s.gegner.elite ? "Elite " : ""}${s.gegner.name} erscheint`, "raum");
+  zeichneKampf(true);
+  zeichneInventar();
+}
+
+function zumLager(titel, text) {
+  s.phase = "lager";
+  s.naechster = gegnerErzeugen(s.ziel);
+  zeichneLager(titel, text);
+  zeichneInventar();
+  laufSpeichern();
+}
+
+function elementFaktor(g, element, w = werte()) {
+  if (!element) return 1;
+  if (element === g.schwach) return w.schwachF;
+  if (element === g.stark) return w.starkF;
+  return 1;
+}
+function schutzAnteil(schutz) { return schutz / (schutz + 15 + 3 * (s.phase === "lager" ? s.ziel : s.raum)); }
+function trefferVorschau(g, spezial) {
+  const w = werte();
+  let roh = spezial ? g.spezial : g.schaden;
+  if (g.element) roh *= 1 - w.res[g.element] / 100;
+  roh *= 1 - schutzAnteil(g.mechanik === "leere" ? w.schutz / 2 : w.schutz);
+  return Math.max(Math.round(roh), 1);
+}
+function schadenSpanne(g) {
+  const w = werte();
+  let f = 1;
+  if (w.element) f = elementFaktor(g, w.element, w) * w.elementMult;
+  if (hatSegen("berserker")) f *= 1 + 0.05 * Math.floor((1 - s.leben / w.maxLeben) * 10);
+  if (g.elite === "gepanzert") f *= 0.7;
+  if (g.mechanik === "knochenpanzer" && g.leben < g.maxLeben / 2) f *= 0.7;
+  return [Math.max(1, Math.round(w.angriff * f)), Math.round((w.angriff + 5) * f)];
+}
+
+// =====================================================================
+//   KAMPF
+// =====================================================================
+function aktion(typ) {
+  if (beschaeftigt || s.phase !== "kampf") return;
+  const g = s.gegner;
+  const w = werte();
+
+  if (typ === "angriff") {
+    let f = 1;
+    if (w.element) f = elementFaktor(g, w.element, w) * w.elementMult;
+    if (hatSegen("berserker")) f *= 1 + 0.05 * Math.floor((1 - s.leben / w.maxLeben) * 10);
+    if (g.elite === "gepanzert") f *= 0.7;
+    if (g.mechanik === "knochenpanzer" && g.leben < g.maxLeben / 2) f *= 0.7;
+    if (g.mechanik === "blendung" && rnd() < 0.2) {
+      s.ersterAngriff = false;
+      zahl($("gegnerName"), "Verfehlt", "info");
+      eintrag(`Geblendet! Dein Angriff verfehlt ${g.name}.`);
+      nachSpielerZug();
+      return;
+    }
+    const krit = (s.ersterAngriff && skill("erstschlag")) || rnd() * 100 < w.krit;
+    s.ersterAngriff = false;
+    let schaden = Math.max(1, Math.round((w.angriff + zufall(0, 5)) * f * (krit ? w.kritMult : 1)));
+    g.leben = Math.max(g.leben - schaden, 0);
+    zahl($("siegel"), `−${schaden}`, "treffer" + (krit ? " krit" : ""));
+    const ef = w.element ? elementFaktor(g, w.element, w) : 1;
+    if (ef > 1) zahl($("gegnerName"), "Schwachstelle!", "info");
+    if (ef < 1) zahl($("gegnerName"), "Resistent", "info");
+    wackle($("siegel"));
+    eintrag(`${krit ? "Kritisch! " : ""}Du triffst ${g.name} für ${schaden}${ef > 1 ? " (Schwachstelle)" : ef < 1 ? " (resistent)" : ""}.`);
+
+    ton(krit ? "krit" : "treffer");
+    if (g.mechanik === "hoellenpakt") {
+      const rueck = Math.max(1, Math.round(schaden * 0.15));
+      s.leben = Math.max(s.leben - rueck, 1);
+      eintrag(`Höllenpakt: ${rueck} Schaden trifft dich selbst.`, "schaden");
+    }
+    if (krit && setStufe(w.z, "schatten") >= 3 && g.leben > 0) {
+      const zweit = Math.max(1, Math.round(schaden / 2));
+      g.leben = Math.max(g.leben - zweit, 0); schaden += zweit;
+      eintrag(`Schattenstoß: weitere ${zweit} Schaden.`);
+    }
+    if (setStufe(w.z, "glut") >= 3 && g.leben > 0) s.brand = 3;
+
+    let lr = w.lebensraub;
+    if (setStufe(w.z, "blut") >= 2 && s.leben < w.maxLeben * 0.3) lr *= 2;
+    if (lr && s.leben < w.maxLeben) {
+      const heil = Math.min(Math.max(1, Math.round(schaden * lr / 100)), w.maxLeben - s.leben);
+      s.leben += heil;
+      zahl($("spielerBalken"), `+${heil}`, "heilung");
+    }
+  } else if (typ === "trank") {
+    if (!trankTrinken()) return;
+    s.trankImKampf = true;
+  } else if (typ === "flucht") {
+    if (g.boss) {
+      s.ziel = Math.max(s.raum - 3, 1);
+      eintrag(`Du fliehst vor ${g.name} zurück in Raum ${s.ziel}.`, "schaden");
+      zumLager("Geflohen", "Du bist dem Boss entkommen. Sammle Kraft und Ausrüstung, dann versuch es erneut.");
+    } else {
+      eintrag(`Du fliehst vor ${g.name}.`);
+      spielende("Geflohen");
+    }
+    return;
+  }
+  nachSpielerZug();
+}
+
+function trankHeilung(w) {
+  let anteil = 0.4 + 0.02 * skill("heilkunde");
+  if (hatSegen("alchemist")) anteil *= 2;
+  return Math.min(Math.floor(w.maxLeben * anteil), w.maxLeben - s.leben);
+}
+
+function trankTrinken() {
+  const w = werte();
+  if (hatSegen("blutpakt")) { hinweis("Blutpakt: Tränke wirken nicht mehr"); return false; }
+  if (s.traenke === 0) { hinweis("Keine Tränke mehr"); return false; }
+  if (s.leben >= w.maxLeben) { hinweis("Dein Leben ist voll"); return false; }
+  s.traenke -= 1;
+  const heil = trankHeilung(w);
+  s.leben += heil;
+  zahl($("spielerBalken"), `+${heil}`, "heilung");
+  eintrag(`Du trinkst einen Trank: +${heil} Leben.`, "heil");
+  return true;
+}
+
+function nachSpielerZug() {
+  aktualisiere(); zeichneInventar();
+  if (s.gegner.leben === 0) { beschaeftigt = true; setTimeout(() => { beschaeftigt = false; sieg(); }, 520); return; }
+  beschaeftigt = true; aktualisiere();
+  setTimeout(gegnerZug, 430);
+}
+
+function einTreffer(g, spezial, w) {
+  let treffer = trefferVorschau(g, spezial);
+  if (g.mechanik === "tentakel") treffer = Math.max(1, Math.round(treffer * 0.6));
+  s.trefferZaehler += 1;
+  if (setStufe(w.z, "frost") >= 3 && s.trefferZaehler % 4 === 0) {
+    zahl($("spielerZahl"), "Abgewehrt", "info");
+    eintrag(`Frostwacht wehrt den Treffer von ${g.name} komplett ab.`, "heil");
+    return;
+  }
+  const geblockt = rnd() * 100 < w.block;
+  if (geblockt) treffer = Math.ceil(treffer / 2);
+  s.leben = Math.max(s.leben - treffer, 0);
+  ton("schaden");
+  if (g.mechanik === "gift") s.gift = 3;
+  if (g.mechanik === "feueratem" && spezial) { s.brennen = 3; eintrag("Du stehst in Flammen!", "schaden"); }
+  if (g.mechanik === "lebensentzug") {
+    const heil = Math.min(Math.round(treffer * 0.3), g.maxLeben - g.leben);
+    if (heil > 0) { g.leben += heil; eintrag(`${g.name} entzieht dir ${heil} Leben.`); }
+  }
+  zahl($("spielerBalken"), `−${treffer}`, "treffer" + (spezial ? " krit" : ""));
+  if (geblockt) zahl($("spielerZahl"), "Geblockt", "info");
+  eintrag(spezial ? `${g.name} entfesselt einen Spezialangriff${g.element ? " " + ELEMENTE[g.element].icon : ""}: −${treffer}!` : `${g.name} trifft dich für ${treffer}${geblockt ? " (geblockt)" : ""}.`, "schaden");
+  if (g.elite === "vampir") {
+    const heil = Math.min(Math.round(treffer / 2), g.maxLeben - g.leben);
+    if (heil > 0) { g.leben += heil; eintrag(`${g.name} heilt sich um ${heil}.`); }
+  }
+  if (w.dornen && g.leben > 0) { g.leben = Math.max(g.leben - w.dornen, 0); eintrag(`Dornen: ${g.name} erleidet ${w.dornen}.`); }
+  if (setStufe(w.z, "dorn") >= 3 && g.leben > 0) {
+    const verlust = Math.max(1, Math.round(g.maxLeben * 0.05));
+    g.leben = Math.max(g.leben - verlust, 0); eintrag(`Dornenkönig: ${g.name} verliert ${verlust}.`);
+  }
+}
+
+function gegnerZug() {
+  const g = s.gegner;
+  const w = werte();
+  if (s.gift > 0) { const d = Math.max(1, Math.round(w.maxLeben * 0.04)); s.leben = Math.max(s.leben - d, 0); s.gift -= 1; eintrag(`Gift: −${d}.`, "schaden"); }
+  if (s.brennen > 0) { const d = Math.max(1, Math.round(w.maxLeben * 0.03)); s.leben = Math.max(s.leben - d, 0); s.brennen -= 1; eintrag(`Du brennst: −${d}.`, "schaden"); }
+  if (s.brand > 0 && g.leben > 0) {
+    const brand = Math.max(1, Math.round(w.angriff * 0.3));
+    g.leben = Math.max(g.leben - brand, 0); s.brand -= 1;
+    zahl($("siegel"), `🔥 −${brand}`, "treffer"); eintrag(`${g.name} brennt: −${brand}.`);
+  }
+  if (g.leben > 0) {
+    s.runde += 1;
+    const spezial = g.boss && s.runde % 3 === 0;
+    let anzahl = g.elite === "flink" || g.mechanik === "tentakel" ? 2 : 1;
+    if (g.mechanik === "sturmflug" && rnd() < 0.25) { anzahl += 1; eintrag(`${g.name} stößt blitzschnell nach!`); }
+    for (let i = 0; i < anzahl && s.leben > 0 && g.leben > 0; i++) einTreffer(g, spezial && i === 0, w);
+    if (spezial && g.mechanik === "eiseskaelte" && s.leben > 0 && g.leben > 0) { eintrag(`Eiseskälte: ${g.name} schlägt sofort noch einmal zu.`, "schaden"); einTreffer(g, false, w); }
+    if (g.mechanik === "verstaerkung" && s.runde % 4 === 0) {
+      g.schaden = Math.round(g.schaden * 1.15); g.spezial = Math.round(g.spezial * 1.15);
+      eintrag(`${g.name} ruft Verstärkung: Er wird stärker!`, "schaden");
+    }
+    if (g.mechanik === "raserei" && !g.rasend && g.leben < g.maxLeben * 0.3) {
+      g.rasend = true; g.schaden = Math.round(g.schaden * 1.5); g.spezial = Math.round(g.spezial * 1.5);
+      eintrag(`${g.name} gerät in Raserei!`, "schaden");
+    }
+    const v = $("vignette"); v.classList.remove("an"); void v.offsetWidth; v.classList.add("an");
+  }
+
+  if (s.leben === 0 && skill("zweitesleben") && !s.zweitesLebenGenutzt) {
+    s.zweitesLebenGenutzt = true;
+    s.leben = Math.round(werte().maxLeben * 0.3);
+    eintrag("Zweites Leben: Du stehst noch einmal auf!", "level");
+    zahl($("spielerBalken"), "Zweites Leben", "info");
+  }
+  aktualisiere();
+  if (s.leben === 0) { setTimeout(() => { beschaeftigt = false; spielende("Niederlage"); }, 600); return; }
+  if (g.leben === 0) { setTimeout(() => { beschaeftigt = false; sieg(); }, 520); return; }
+  setTimeout(() => { beschaeftigt = false; aktualisiere(); zeichneInventar(); }, 250);
+}
+
+// ---------- Ausrüsten ----------
+function anlegen(id) {
+  if (beschaeftigt) return;
+  const idx = s.beutel.findIndex((x) => x.id === id);
+  if (idx < 0) return;
+  const it = s.beutel[idx], alt = s.ausr[it.slot];
+  s.beutel.splice(idx, 1);
+  if (alt) s.beutel.push(alt);
+  s.ausr[it.slot] = it;
+  s.leben = Math.min(s.leben, werte().maxLeben);
+  s.auswahl = { ort: "slot", slot: it.slot };
+  eintrag(`${it.name} angelegt.`, "gold");
+  erfolgePruefen();
+  nachWechsel();
+}
+function ablegen(slot) {
+  if (beschaeftigt) return;
+  const it = s.ausr[slot];
+  if (!it) return;
+  if (s.beutel.length >= BEUTEL_PLAETZE) { hinweis("Dein Beutel ist voll"); return; }
+  s.ausr[slot] = null; s.beutel.push(it);
+  s.leben = Math.min(s.leben, werte().maxLeben);
+  s.auswahl = { ort: "beutel", id: it.id };
+  eintrag(`${it.name} abgelegt.`);
+  nachWechsel();
+}
+function wegwerfen(id) {
+  const idx = s.beutel.findIndex((x) => x.id === id);
+  if (idx < 0) return;
+  eintrag(`${s.beutel[idx].name} weggeworfen.`);
+  s.beutel.splice(idx, 1); s.auswahl = null; zeichneInventar();
+}
+function nachWechsel() {
+  if (s.phase === "kampf") {
+    eintrag("Der Wechsel kostet dich deinen Zug.");
+    beschaeftigt = true; aktualisiere(); zeichneInventar();
+    setTimeout(gegnerZug, 430);
+  } else {
+    if (s.phase === "lager") { aktualisiereLager(); laufSpeichern(); }
+    zeichneInventar();
+  }
+}
+
+// =====================================================================
+//   NACH DEM SIEG
+// =====================================================================
+function sieg() {
+  const g = s.gegner;
+  if (s.tages) rnd = mulberry32(s.seed + s.raum * 104729);
+  bestiariumEintrag(g);
+  ton("sieg");
+  const w0 = werte();
+  s.phase = "nachKampf";
+  const goldFaktor = hatSegen("gier") ? 2 : 1;
+  s.exp += g.exp; s.gold += g.gold * goldFaktor;
+  statPlus("monster"); if (g.gold) statPlus("gold", g.gold * goldFaktor);
+  if (g.elite) { s.elite += 1; statPlus("elite"); }
+  eintrag(`${g.name} besiegt: +${g.exp} EXP${g.gold ? `, +${g.gold * goldFaktor} Gold` : ""}.`, "gold");
+
+  if (setStufe(w0.z, "blut") >= 3) {
+    const heil = Math.min(Math.round(w0.maxLeben * 0.15), w0.maxLeben - s.leben);
+    if (heil > 0) { s.leben += heil; eintrag(`Blutjäger: +${heil} Leben.`, "heil"); }
+  }
+
+  const levelVorher = s.level;
+  while (s.exp >= 50 * s.level) {
+    s.exp -= 50 * s.level; s.level += 1; s.maxLebenBasis += 10; s.angriffBasis += 3;
+    eintrag(`Level ${s.level}! Max-Leben +10, Angriff +3.`, "level"); ton("level");
+  }
+  if (s.level > levelVorher) s.leben = werte().maxLeben;
+
+  const keineTraenke = hatSegen("alchemist");
+  const dropBonus = 0.015 * skill("spuersinn");
+  let fund = null;
+  if (g.boss) {
+    s.bosse += 1;
+    statPlus("bosse");
+    if (!s.trankImKampf) statPlus("ohneTrank");
+    statMax("fluch", s.fluch);
+    const gold = 40 * g.stufe * goldFaktor; s.gold += gold; statPlus("gold", gold);
+    eintrag(`Boss-Kiste: ${gold} Gold.`, "gold");
+    if (!keineTraenke && rnd() < 0.5 && s.traenke < maxTraenke()) { s.traenke += 1; eintrag("Ein Trank liegt in der Kiste.", "heil"); }
+    fund = gegenstandErzeugen(s.raum, "boss");
+  } else {
+    if (!keineTraenke && rnd() < 0.2 && s.traenke < maxTraenke()) { s.traenke += 1; eintrag("Du findest einen Trank.", "heil"); }
+    const chance = (g.elite ? 0.6 : 0.2 + dropBonus) * (hatSegen("gier") ? 2 : 1);
+    if (rnd() < chance) fund = gegenstandErzeugen(s.raum, g.elite ? "elite" : "normal");
+  }
+  erfolgePruefen();
+  aktualisiere(); zeichneInventar();
+
+  const schritte = [];
+  if (s.level > levelVorher) schritte.push((weiter) => dialog({
+    titel: `Level ${s.level}`, text: "Max-Leben +10, Angriff +3. Dein Leben ist voll aufgefüllt.",
+    knoepfe: [{ text: "Weiter", primaer: true, tun: weiter }]
+  }));
+  if (fund) schritte.push((weiter) => fundDialog(fund, weiter));
+  if (g.boss) {
+    schritte.push((weiter) => segenDialog(weiter));
+    schritte.push((weiter) => dialog({
+      titel: "Der Boss ist gefallen",
+      text: "Unter dir wartet ein stärkerer Boss. Gehst du tiefer oder kehrst du mit deiner Beute heim?",
+      knoepfe: [{ text: "Tiefer hinab", primaer: true, tun: weiter }, { text: "Mit Ruhm heimkehren", tun: () => spielende("Sieg") }]
+    }));
+  } else {
+    const r = rnd();
+    if (r < 0.3) schritte.push((weiter) => haendler(weiter));
+    else if (r < 0.45) schritte.push((weiter) => schmied(weiter));
+  }
+
+  const naechster = () => {
+    const schritt = schritte.shift();
+    if (schritt) schritt(naechster);
+    else { schliesseDialog(); s.ziel = s.raum + 1; zumLager(`Raum ${s.raum} geräumt`, "Bereite dich vor. Im Kampf kostet jeder Ausrüstungswechsel deinen Zug."); }
+  };
+  naechster();
+}
+
+function segenDialog(weiter) {
+  const frei = SEGEN.filter((x) => !s.segen.includes(x.key));
+  if (!frei.length) { weiter(); return; }
+  const auswahl = [];
+  while (auswahl.length < Math.min(3, frei.length)) {
+    const x = wahl(frei);
+    if (!auswahl.includes(x)) auswahl.push(x);
+  }
+  dialog({
+    titel: "Ein Segen der Tiefe",
+    text: "Aus dem gefallenen Boss steigt eine Macht auf. Jeder Segen ist stark, verlangt aber einen Preis bis zum Ende des Laufs.",
+    knoepfe: [
+      ...auswahl.map((x) => ({ text: x.name, unter: `${x.gut} · Preis: ${x.schlecht}`, tun: () => {
+        const vorher = werte().maxLeben;
+        s.segen.push(x.key);
+        eintrag(`Segen angenommen: ${x.name}.`, "level"); statPlus("segen");
+        if (x.key === "opfer") {
+          const it = gegenstandBauen(wahl(SLOTS).key, 3, Math.floor(s.raum / 5) + 1);
+          if (s.beutel.length < BEUTEL_PLAETZE) { s.beutel.push(it); eintrag(`${it.name} erscheint in deinem Beutel.`, "gold"); }
+          statPlus("legendaer");
+        }
+        const nachher = werte().maxLeben;
+        if (nachher < vorher) s.leben = Math.min(s.leben, nachher);
+        erfolgePruefen(); aktualisiere(); zeichneInventar(); weiter();
+      } })),
+      { text: "Ablehnen", unter: "Kein Vorteil, kein Preis", tun: weiter }
+    ]
+  });
+}
+
+function itemDetailsHtml(it, mitVergleich = true) {
+  const slot = SLOTS.find((q) => q.key === it.slot);
+  const zeilen = [];
+  if (it.angriff) zeilen.push(`+${it.angriff} Angriff`);
+  if (it.schutz) zeilen.push(`+${it.schutz} Schutz`);
+  if (it.element) zeilen.push(`Element: ${elText(it.element)}`);
+  it.effekte.forEach((e) => zeilen.push(effektText(e)));
+  let setHtml = "";
+  if (it.set) {
+    const st = SETS[it.set], n = setZaehlen()[it.set] || 0;
+    setHtml = `<p class="zeile t-set">Set ${st.name} (${n}/6 angelegt): ${st.boni.map((b, i) => `${(i + 1) * 2} Teile: ${b}`).join(" · ")}</p>`;
+  }
+  return `<h4 class="t-${it.seltenheit}">${it.name}</h4>
+    <div class="zeile">${seltenheitsName(it)} · ${slot.icon} ${slot.name} · Wert ${it.wert} Gold</div>
+    <ul>${zeilen.map((z) => `<li>${z}</li>`).join("")}</ul>${setHtml}
+    ${mitVergleich ? `<p class="delta">Statt ${s.ausr[it.slot] ? s.ausr[it.slot].name : "nichts"}: ${vergleich(it)}</p>` : ""}`;
+}
+
+function fundDialog(it, weiter) {
+  ton("beute");
+  const voll = s.beutel.length >= BEUTEL_PLAETZE;
+  const titel = it.set ? "Ein Set-Teil!" : it.seltenheit === "legendaer" ? "Legendärer Fund!" : it.seltenheit === "episch" ? "Epischer Fund!" : "Beute";
+  dialog({
+    titel, text: "", html: `<div class="details">${itemDetailsHtml(it)}</div>`,
+    knoepfe: [
+      { text: "Anlegen", primaer: istBesser(it), tun: () => {
+          const alt = s.ausr[it.slot];
+          if (alt) { if (voll) eintrag(`${alt.name} zurückgelassen.`); else s.beutel.push(alt); }
+          s.ausr[it.slot] = it; s.leben = Math.min(s.leben, werte().maxLeben);
+          eintrag(`${it.name} angelegt.`, "gold"); erfolgePruefen(); aktualisiere(); zeichneInventar(); weiter();
+        } },
+      { text: "In den Beutel", unter: voll ? "Beutel voll" : `${s.beutel.length} / ${BEUTEL_PLAETZE} belegt`, aus: voll, primaer: !istBesser(it) && !voll,
+        tun: () => { s.beutel.push(it); eintrag(`${it.name} eingepackt.`); zeichneInventar(); weiter(); } },
+      { text: "Liegen lassen", tun: weiter }
+    ]
+  });
+}
+
+function preis(basis) { return Math.round(basis * (1 - 0.03 * skill("feilschen"))); }
+
+function haendler(weiter) {
+  const trankPreis = preis(30), trainingPreis = preis(40 + 20 * s.trainings);
+  const keineTraenke = hatSegen("alchemist");
+  dialog({
+    titel: "Ein Händler",
+    text: `Im Schein seiner Laterne breitet er seine Waren aus. Du hast ${s.gold} Gold.`,
+    html: s.beutel.length ? `<h3 class="titel" style="margin:10px 0 0;font-size:1.1rem">Aus deinem Beutel verkaufen</h3>
+      <div class="verkauf">${s.beutel.map((it) => `<button class="knopf klein" type="button" data-verkauf="${it.id}"><span class="t-${it.seltenheit}">${it.name}</span><span>+${it.wert} Gold</span></button>`).join("")}</div>` : "",
+    knoepfe: [
+      { text: "Trank kaufen", unter: keineTraenke ? "Alchemist: nicht möglich" : s.traenke >= maxTraenke() ? `Gürtel voll (${maxTraenke()})` : `${trankPreis} Gold · ${s.traenke} / ${maxTraenke()}`,
+        aus: keineTraenke || s.gold < trankPreis || s.traenke >= maxTraenke(),
+        tun: () => { s.gold -= trankPreis; s.traenke += 1; eintrag(`Trank gekauft (−${trankPreis} Gold).`, "heil"); aktualisiere(); zeichneInventar(); haendler(weiter); } },
+      { text: "Training: Angriff +2", unter: `${trainingPreis} Gold`, aus: s.gold < trainingPreis,
+        tun: () => { s.gold -= trainingPreis; s.angriffBasis += 2; s.trainings += 1; eintrag(`Training: Angriff +2 (−${trainingPreis} Gold).`, "level"); aktualisiere(); zeichneInventar(); haendler(weiter); } },
+      { text: "Alle gewöhnlichen verkaufen", unter: (() => { const l = s.beutel.filter((x) => x.seltenheit === "gewoehnlich"); return l.length ? `${l.length} Teile für ${l.reduce((a, x) => a + x.wert, 0)} Gold` : "keine im Beutel"; })(),
+        aus: !s.beutel.some((x) => x.seltenheit === "gewoehnlich"),
+        tun: () => {
+          const l = s.beutel.filter((x) => x.seltenheit === "gewoehnlich");
+          const erloes = l.reduce((a, x) => a + x.wert, 0);
+          l.forEach((x) => s.beutel.splice(s.beutel.indexOf(x), 1));
+          s.gold += erloes; eintrag(`${l.length} gewöhnliche Teile verkauft: +${erloes} Gold.`, "gold");
+          erfolgePruefen(); aktualisiere(); zeichneInventar(); haendler(weiter);
+        } },
+      { text: "Weiterziehen", primaer: true, tun: weiter }
+    ]
+  });
+  $("dialog").querySelectorAll("[data-verkauf]").forEach((b) => b.addEventListener("click", () => {
+    const idx = s.beutel.findIndex((x) => x.id === Number(b.dataset.verkauf));
+    if (idx < 0) return;
+    const it = s.beutel.splice(idx, 1)[0];
+    s.gold += it.wert; eintrag(`${it.name} verkauft: +${it.wert} Gold.`, "gold");
+    erfolgePruefen(); zeichneInventar(); haendler(weiter);
+  }));
+}
+
+// =====================================================================
+//   EREIGNISRÄUME
+// =====================================================================
+const EREIGNISSE = {
+  schrein: { bild: "⛩️", titel: "Ein vergessener Schrein", text: "Eine Inschrift verlangt ein Opfer: ein Viertel deines aktuellen Lebens für einen Gegenstand aus der Tiefe." },
+  truhe: { bild: "🧰", titel: "Eine verfluchte Truhe", text: "Die Truhe pulsiert. Vielleicht liegt darin ein Schatz, vielleicht wartet etwas Hungriges." },
+  brunnen: { bild: "⛲", titel: "Ein klarer Brunnen", text: "Das Wasser leuchtet schwach. Du kannst daraus trinken oder eine Flasche füllen." },
+  spieltisch: { bild: "🎲", titel: "Ein Spieltisch", text: "Ein Skelett mit Würfelbecher bietet ein Spiel an: Setze die Hälfte deines Golds. Bei einem Sieg verdoppelt es sich." }
+};
+
+function ereignisFertig(text) {
+  if (text) eintrag(text);
+  statPlus("ereignisse");
+  s.ziel = s.raum + 1;
+  zumLager(`Raum ${s.raum} hinter dir`, "Bereite dich vor. Im Kampf kostet jeder Ausrüstungswechsel deinen Zug.");
+}
+
+function zeichneEreignis(typ) {
+  const e = EREIGNISSE[typ];
+  eintrag(`Raum ${s.raum}: ${e.titel}`, "raum");
+  const w = werte();
+  let knoepfe = [];
+  if (typ === "schrein") knoepfe = [
+    { text: "Opfern", unter: `−${Math.ceil(s.leben / 4)} Leben`, tun: () => {
+        const opfer = Math.ceil(s.leben / 4); s.leben = Math.max(s.leben - opfer, 1);
+        const it = gegenstandErzeugen(s.raum, "elite");
+        eintrag(`Du opferst ${opfer} Leben.`, "schaden");
+        fundDialog(it, () => { schliesseDialog(); ereignisFertig(); });
+      } },
+    { text: "Weitergehen", tun: () => ereignisFertig("Du lässt den Schrein hinter dir.") }];
+  if (typ === "truhe") knoepfe = [
+    { text: "Öffnen", unter: "Schatz oder Falle", tun: () => {
+        if (rnd() < 0.5) {
+          const it = gegenstandErzeugen(s.raum, "boss");
+          eintrag("Die Truhe enthält einen Schatz!", "gold");
+          fundDialog(it, () => { schliesseDialog(); ereignisFertig(); });
+        } else {
+          eintrag("Die Truhe hat Zähne!", "schaden");
+          const g = gegnerErzeugen(Math.max(s.raum, 9));
+          const mimik = { ...g, ereignis: null, name: "Mimik (Zäh)", art: "Mimik", mechanik: null, bild: "📦", schwach: "feuer", stark: "blitz", element: null, boss: false, elite: "zaeh", stufe: 0, spezial: 0,
+            leben: Math.round((22 + 7 * s.raum) * 1.8), schaden: Math.round(4 + 2 * s.raum), exp: 25 * s.raum, gold: 3 * s.raum };
+          s.naechster = mimik; s.ziel = s.raum; betreteRaum();
+        }
+      } },
+    { text: "Ignorieren", tun: () => ereignisFertig("Du lässt die Truhe zu.") }];
+  if (typ === "brunnen") knoepfe = [
+    { text: "Trinken", unter: "Leben voll auffüllen", tun: () => { s.leben = w.maxLeben; ereignisFertig("Du trinkst und fühlst dich erfrischt."); } },
+    { text: "Flasche füllen", unter: hatSegen("alchemist") ? "Alchemist: nicht möglich" : s.traenke >= maxTraenke() ? "Gürtel voll" : "+1 Trank",
+      aus: hatSegen("alchemist") || s.traenke >= maxTraenke(), tun: () => { s.traenke += 1; ereignisFertig("Du füllst eine Flasche: +1 Trank."); } }];
+  if (typ === "spieltisch") knoepfe = [
+    { text: "Spielen", unter: `Einsatz ${Math.floor(s.gold / 2)} Gold`, aus: s.gold < 2, tun: () => {
+        const einsatz = Math.floor(s.gold / 2);
+        if (rnd() < 0.5) { s.gold += einsatz; statPlus("gold", einsatz); ereignisFertig(`Gewonnen! +${einsatz} Gold.`); }
+        else { s.gold -= einsatz; ereignisFertig(`Verloren. −${einsatz} Gold.`); }
+      } },
+    { text: "Ablehnen", tun: () => ereignisFertig("Das Skelett klappert enttäuscht.") }];
+
+  $("arena").innerHTML = `
+    <section class="ereignis">
+      <div class="siegel erscheinen">${e.bild}</div>
+      <h2 class="titel">${e.titel}</h2>
+      <p>${e.text}</p>
+    </section>
+    ${spielerHtml()}
+    <section class="aktionen zwei" id="ereignisKnoepfe"></section>`;
+  const box = $("ereignisKnoepfe");
+  knoepfe.forEach((k, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "knopf" + (i === 0 ? " angriff" : "");
+    b.innerHTML = `<span>${k.text}${k.unter ? `<span class="unter">${k.unter}</span>` : ""}</span><kbd>${i + 1}</kbd>`;
+    b.disabled = !!k.aus;
+    b.addEventListener("click", () => { if (s.phase === "ereignis") k.tun(); });
+    box.appendChild(b);
+  });
+  spielerWerteAnzeigen();
+  $("ort").innerHTML = `Raum <b>${s.raum}</b> · Bosse <b>${s.bosse}</b>`;
+}
+
+// =====================================================================
+//   SPIELENDE
+// =====================================================================
+function splitterBerechnen() {
+  const basis = s.raum + 10 * s.bosse + 3 * s.elite;
+  return Math.round(basis * (1 + 0.25 * s.fluch) * (hatSegen("seelenernte") ? 1.75 : 1));
+}
+
+function spielende(ergebnis) {
+  schliesseDialog();
+  s.phase = "ende";
+  laufLoeschen();
+  ton(ergebnis === "Niederlage" ? "niederlage" : "sieg");
+  statPlus("laeufe");
+  const splitter = splitterBerechnen();
+  meta.splitter += splitter;
+  const neuerRekord = s.raum > meta.rekord;
+  if (neuerRekord) meta.rekord = s.raum;
+  let fluchFrei = false;
+  if (!s.tages && s.bosse >= 2 && s.fluch === meta.fluchMax && meta.fluchMax < MAX_FLUCH) { meta.fluchMax += 1; fluchFrei = true; }
+  if (s.tages) { const k = tagesSchluessel(); meta.tagesBest[k] = Math.max(meta.tagesBest[k] || 0, s.raum); }
+  metaSpeichern();
+
+  const texte = {
+    "Sieg": ["🏆", "Mit Ruhm heimgekehrt", "Du verlässt den Dungeon lebend und mit vollen Taschen."],
+    "Niederlage": ["🪦", "Gefallen", "Der Dungeon behält dich, aber deine Seele bringt Splitter zurück."],
+    "Geflohen": ["🏃", "Geflohen", "Du rennst ans Tageslicht. Lebend, aber ohne Ruhm."]
+  };
+  const [bild, titel, text] = texte[ergebnis];
+  eintrag(`Spielende: ${ergebnis}. +${splitter} Seelensplitter.`, "raum");
+  const w = werte();
+  $("arena").innerHTML = `<section class="buehne-voll">
+      <div class="siegel erscheinen">${bild}</div>
+      <h2 class="titel">${titel}</h2><p>${text}</p>
+      <p class="belohnung-splitter">+<b>${splitter}</b> Seelensplitter</p>
+      <div class="statistik">
+        <div><small>Erreichter Raum</small><b>${s.raum}</b></div>
+        <div><small>Bosse</small><b>${s.bosse}</b></div>
+        <div><small>Elite</small><b>${s.elite}</b></div>
+        <div><small>Level</small><b>${s.level}</b></div>
+        <div><small>Angriff</small><b>${w.angriff}</b></div>
+        <div><small>Schutz</small><b>${w.schutz}</b></div>
+      </div>
+      ${neuerRekord ? `<p class="rekord">Neuer Rekord: Raum ${s.raum}</p>` : ""}
+      ${fluchFrei ? `<p class="rekord">Fluchstufe ${meta.fluchMax} freigeschaltet</p>` : ""}
+      <button class="knopf angriff" id="hubKnopf" type="button">Zurück ins Lager der Ahnen</button>
+    </section>`;
+  $("ort").innerHTML = "";
+  $("inventar").hidden = true;
+  $("hubKnopf").addEventListener("click", () => { s = null; hubReiter = "baum"; zeichneHub(); });
+  $("hubKnopf").focus();
+}
+
+// =====================================================================
+//   LAGER DER AHNEN (Hub zwischen den Läufen)
+// =====================================================================
+function bestiariumHtml() {
+  const karte = (x, boss) => {
+    const n = meta.bestiarium[x.name] || 0;
+    if (!n) return `<div class="karte gesperrt"><span class="gross">❔</span><b>???</b><small>${boss ? `Boss ab Stufe ${x.ab}` : `ab Raum ${x.ab}`}</small></div>`;
+    const m = boss ? MECHANIKEN[BOSS_MECHANIK[x.name]] : null;
+    return `<div class="karte"><span class="gross">${x.bild}</span><b>${x.name}</b>
+      <small>Schwach: ${elText(x.schwach)}${x.stark ? ` · Stark: ${elText(x.stark)}` : ""}${x.element ? ` · Angriff: ${elText(x.element)}` : ""}</small>
+      ${m ? `<small><b>${m.name}:</b> ${m.text}</small>` : ""}<small>${n}× besiegt</small></div>`;
+  };
+  const bekannt = [...GEGNER, ...BOSSE].filter((x) => meta.bestiarium[x.name]).length;
+  return `<p class="fluch-text" style="text-align:center;margin-bottom:10px">${bekannt} von ${GEGNER.length + BOSSE.length} Gegnern entdeckt</p>
+    <h3 class="titel abschnitt-titel">Monster</h3><div class="karten">${GEGNER.map((x) => karte(x, false)).join("")}</div>
+    <h3 class="titel abschnitt-titel">Bosse</h3><div class="karten">${BOSSE.map((x) => karte(x, true)).join("")}</div>`;
+}
+
+function zeichneHub() {
+  $("inventar").hidden = true;
+  $("ort").innerHTML = `Läufe <b>${meta.laeufe}</b> · Rekord <b>Raum ${meta.rekord}</b>`;
+  if (!meta.klassen[hubKlasse]) hubKlasse = "krieger";
+  hubFluch = Math.min(hubFluch, meta.fluchMax);
+  let inhalt = "";
+
+  if (hubReiter === "lauf") {
+    const gespeichert = laufLaden();
+    inhalt = `
+      ${gespeichert ? `<div class="fortsetzen"><div><b>Laufender Lauf</b><small>${KLASSEN.find((k) => k.key === gespeichert.s.klasse).name}${gespeichert.s.tages ? " · Tages-Dungeon" : ""} · vor Raum ${gespeichert.s.ziel} · Level ${gespeichert.s.level}</small></div>
+        <div class="knoepfe"><button type="button" class="knopf angriff klein" id="weiterLauf">Fortsetzen</button><button type="button" class="knopf klein" id="aufgeben">Aufgeben</button></div></div>` : ""}
+      <h3 class="titel abschnitt-titel">Klasse</h3>
+      <div class="karten">${KLASSEN.map((k) => {
+        const frei = meta.klassen[k.key];
+        return `<button type="button" class="karte ${frei ? "" : "gesperrt"}" data-klasse="${k.key}" aria-pressed="${hubKlasse === k.key}">
+          <span class="gross">${k.bild}</span><b>${k.name}</b><small>${k.text}</small>
+          ${frei ? "" : `<small class="lohn">Freischalten: ${k.kosten} Seelensplitter</small>`}</button>`;
+      }).join("")}</div>
+      <h3 class="titel abschnitt-titel">Fluchstufe</h3>
+      <div class="fluch">${Array.from({ length: MAX_FLUCH + 1 }, (_, i) =>
+        `<button type="button" data-fluch="${i}" aria-pressed="${hubFluch === i}" ${i > meta.fluchMax ? "disabled" : ""}>${i}</button>`).join("")}</div>
+      <p class="fluch-text">${hubFluch ? `Gegner +${15 * hubFluch} % Leben und +${10 * hubFluch} % Schaden, dafür +${25 * hubFluch} % Seelensplitter.` : "Kein Fluch."}
+        Besiege 2 Bosse auf deiner höchsten Stufe, um die nächste freizuschalten.</p>
+      <div class="start-zeile"><button type="button" class="knopf angriff" id="startKnopf">Abstieg beginnen<kbd>1</kbd></button></div>
+      ${gespeichert ? `<p class="fluch-text" style="text-align:center">Ein neuer Lauf ersetzt den gespeicherten.</p>` : ""}
+      <h3 class="titel abschnitt-titel">Tages-Dungeon</h3>
+      <p class="fluch-text">Heute für alle derselbe Dungeon: Krieger, ohne Fluch und ohne Skills. Gut zum Vergleichen mit anderen.
+        ${meta.tagesBest[tagesSchluessel()] ? `Dein Bestes heute: Raum ${meta.tagesBest[tagesSchluessel()]}.` : "Heute noch nicht gespielt."}</p>
+      <div class="start-zeile"><button type="button" class="knopf" id="tagesKnopf">Tages-Dungeon starten</button></div>`;
+  } else if (hubReiter === "baum") {
+    inhalt = `<div class="baum">${Object.entries(AESTE).map(([ast, astName]) => `
+      <div class="ast"><h3 class="titel">${astName}</h3><small>${astPunkte(ast)} Punkte in diesem Ast</small>
+      ${SKILLS.filter((k) => k.ast === ast).map((k) => {
+        const st = skill(k.id), voll = st >= k.max, kosten = k.kosten(st);
+        const gesperrt = k.schluessel && astPunkte(ast) < k.braucht;
+        const kann = !voll && !gesperrt && meta.splitter >= kosten;
+        return `<div class="knoten ${k.schluessel ? "schluessel" : ""}">
+          <b>${k.name}</b><small>${k.schluessel ? k.text(1) : st === 0 ? `Nächste Stufe: ${k.text(1)}` : voll ? `Aktiv: ${k.text(st)}` : `Aktiv: ${k.text(st)} · nächste: ${k.text(st + 1)}`}</small>
+          ${gesperrt ? `<small>Braucht ${k.braucht} Punkte im Ast</small>` : ""}
+          <div class="zeile2"><span class="punkte">${Array.from({ length: k.max }, (_, i) => `<i class="${i < st ? "voll" : ""}"></i>`).join("")}</span>
+          ${voll ? "<small>voll</small>" : `<button type="button" class="knopf klein" data-skill="${k.id}" ${kann ? "" : "disabled"}>${kosten} ✦</button>`}</div>
+        </div>`;
+      }).join("")}</div>`).join("")}</div>`;
+  } else if (hubReiter === "bestiarium") {
+    inhalt = bestiariumHtml();
+  } else {
+    const gesamt = ERFOLGE.reduce((n, e) => n + e.ziele.length, 0);
+    const erreicht = ERFOLGE.reduce((n, e) => n + (meta.erfolgStufe[e.id] || 0), 0);
+    inhalt = `<p class="fluch-text" style="text-align:center;margin-bottom:10px">${erreicht} von ${gesamt} Erfolgsstufen erreicht</p>
+      <ul class="erfolge">${ERFOLGE.map((e) => {
+        const stufe = meta.erfolgStufe[e.id] || 0, wert = meta.stats[e.stat] || 0, fertig = stufe >= e.ziele.length;
+        const ziel = fertig ? e.ziele[e.ziele.length - 1] : e.ziele[stufe];
+        const vorher = stufe ? e.ziele[stufe - 1] : 0;
+        const prozent = fertig ? 100 : Math.min(100, Math.round(((wert - vorher) / (ziel - vorher)) * 100));
+        return `<li class="${fertig ? "erreicht" : ""}"><div style="flex:1">
+          <b>${e.name}</b> <span>Stufe ${stufe}/${e.ziele.length}</span><br>
+          <span>${fertig ? "Alle Stufen geschafft" : `${e.text(ziel)} · ${Math.min(wert, ziel).toLocaleString("de-DE")} / ${ziel.toLocaleString("de-DE")}`}</span>
+          <div class="balken exp" style="margin-top:6px"><i class="wert" style="width:${Math.max(prozent, 0)}%"></i></div>
+        </div><span class="lohn">${fertig ? "✓" : `+${erfolgLohn(e, stufe)} ✦`}</span></li>`;
+      }).join("")}</ul>
+      <div class="start-zeile"><button type="button" class="knopf" id="resetKnopf">Gesamten Fortschritt zurücksetzen</button></div>`;
+  }
+
+  $("arena").innerHTML = `<section class="hub">
+      <div class="hub-kopf">
+        <h2 class="titel">Lager der Ahnen</h2>
+        <p>Der Abstieg ist verflucht: Jeder Lauf beginnt von vorn. Was du an Seelensplittern heimbringst, macht dich dauerhaft stärker.</p>
+        <div class="splitter">✦ <b>${meta.splitter}</b> Seelensplitter</div>
+      </div>
+      <div class="reiter">
+        <button type="button" data-reiter="lauf" aria-pressed="${hubReiter === "lauf"}">Neuer Lauf</button>
+        <button type="button" data-reiter="baum" aria-pressed="${hubReiter === "baum"}">Skillbaum</button>
+        <button type="button" data-reiter="erfolge" aria-pressed="${hubReiter === "erfolge"}">Erfolge</button>
+        <button type="button" data-reiter="bestiarium" aria-pressed="${hubReiter === "bestiarium"}">Bestiarium</button>
+      </div>
+      ${inhalt}
+    </section>`;
+
+  $("arena").querySelectorAll("[data-reiter]").forEach((b) => b.addEventListener("click", () => { hubReiter = b.dataset.reiter; zeichneHub(); }));
+  $("arena").querySelectorAll("[data-klasse]").forEach((b) => b.addEventListener("click", () => {
+    const k = KLASSEN.find((x) => x.key === b.dataset.klasse);
+    if (meta.klassen[k.key]) { hubKlasse = k.key; zeichneHub(); return; }
+    if (meta.splitter < k.kosten) { hinweis(`Dir fehlen ${k.kosten - meta.splitter} Seelensplitter`); return; }
+    meta.splitter -= k.kosten; meta.klassen[k.key] = true; hubKlasse = k.key; metaSpeichern();
+    hinweis(`${k.name} freigeschaltet`); zeichneHub();
+  }));
+  $("arena").querySelectorAll("[data-fluch]").forEach((b) => b.addEventListener("click", () => { hubFluch = Number(b.dataset.fluch); zeichneHub(); }));
+  $("arena").querySelectorAll("[data-skill]").forEach((b) => b.addEventListener("click", () => {
+    const k = SKILLS.find((x) => x.id === b.dataset.skill);
+    const kosten = k.kosten(skill(k.id));
+    if (meta.splitter < kosten) return;
+    meta.splitter -= kosten; meta.skills[k.id] = skill(k.id) + 1; metaSpeichern(); zeichneHub();
+  }));
+  const start = $("startKnopf");
+  if (start) start.addEventListener("click", () => laufStarten(hubKlasse, hubFluch));
+  const weiterLauf = $("weiterLauf"); if (weiterLauf) weiterLauf.addEventListener("click", laufFortsetzen);
+  const aufgeben = $("aufgeben"); if (aufgeben) aufgeben.addEventListener("click", () => dialog({
+    titel: "Lauf aufgeben?", text: "Der gespeicherte Lauf wird gelöscht. Seelensplitter gibt es dafür keine.",
+    knoepfe: [{ text: "Aufgeben", tun: () => { laufLoeschen(); schliesseDialog(); zeichneHub(); } }, { text: "Abbrechen", primaer: true, tun: schliesseDialog }]
+  }));
+  const tagesKnopf = $("tagesKnopf"); if (tagesKnopf) tagesKnopf.addEventListener("click", () => laufStarten("krieger", 0, true));
+  const resetKnopf = $("resetKnopf"); if (resetKnopf) resetKnopf.addEventListener("click", () => dialog({
+    titel: "Wirklich alles zurücksetzen?", text: "Seelensplitter, Skills, Klassen, Fluchstufen, Erfolge, Bestiarium und ein gespeicherter Lauf werden gelöscht. Das lässt sich nicht rückgängig machen.",
+    knoepfe: [{ text: "Ja, alles löschen", tun: () => {
+        try { localStorage.removeItem("miniDungeonMeta3"); } catch (e) {}
+        laufLoeschen(); meta = metaLaden(); hubReiter = "lauf"; hubKlasse = "krieger"; hubFluch = 0;
+        schliesseDialog(); zeichneHub(); hinweis("Fortschritt zurückgesetzt");
+      } }, { text: "Abbrechen", primaer: true, tun: schliesseDialog }]
+  }));
+}
+
+// =====================================================================
+//   ANZEIGE IM LAUF
+// =====================================================================
+function merkmaleHtml(g) {
+  const teile = [];
+  if (g.mechanik) teile.push(`<span class="chip elite">${MECHANIKEN[g.mechanik].name}: ${MECHANIKEN[g.mechanik].text}</span>`);
+  if (g.elite) { const e = ELITE.find((x) => x.key === g.elite); teile.push(`<span class="chip elite">Elite: ${e.text}</span>`); }
+  if (g.schwach) teile.push(`<span class="chip schwach">Schwach: ${elText(g.schwach)}</span>`);
+  if (g.stark) teile.push(`<span class="chip stark">Stark: ${elText(g.stark)}</span>`);
+  if (g.element) teile.push(`<span class="chip">Greift an mit ${elText(g.element)}</span>`);
+  return `<div class="merkmale">${teile.join("")}</div>`;
+}
+
+function spielerHtml() {
+  return `<section class="spieler">
+      <div class="spieler-kopf"><h2 class="titel">Du</h2><span id="levelText"></span></div>
+      <div class="balken leben" id="spielerBalken"><i class="nachzieh" id="spielerNach"></i><i class="wert" id="spielerWert"></i></div>
+      <div class="balken-zeile"><span>Leben</span><b id="spielerZahl"></b></div>
+      <div class="balken exp" style="margin-top:10px"><i class="wert" id="expWert"></i></div>
+      <div class="balken-zeile"><span>Erfahrung</span><b id="expZahl"></b></div>
+      <div class="werte">
+        <div class="wert-feld"><small>Angriff</small><b id="wAngriff"></b></div>
+        <div class="wert-feld"><small>Schutz</small><b id="wSchutz"></b></div>
+        <div class="wert-feld"><small>Krit</small><b id="wKrit"></b></div>
+        <div class="wert-feld"><small>Tränke</small><b id="wTraenke"></b></div>
+        <div class="wert-feld gold"><small>Gold</small><b id="wGold"></b></div>
+      </div>
+      <div class="segen-liste" id="segenListe"></div>
+    </section>`;
+}
+
+function zeichneKampf(neu) {
+  const g = s.gegner;
+  $("arena").innerHTML = `
+    <section class="gegner-buehne ${g.boss ? "boss" : ""}">
+      <div class="boss-banner titel">Boss · Stufe ${g.stufe}</div>
+      <div class="siegel ${neu ? "erscheinen" : ""}" id="siegel" aria-hidden="true">${g.bild}</div>
+      <h2 class="gegner-name titel" id="gegnerName">${g.name}</h2>
+      ${merkmaleHtml(g)}
+      <p class="absicht" id="absicht"></p>
+      <div class="gegner-leben">
+        <div class="balken leben"><i class="nachzieh" id="gegnerNach"></i><i class="wert" id="gegnerWert"></i></div>
+        <div class="balken-zeile"><span>Leben</span><b id="gegnerZahl"></b></div>
+      </div>
+    </section>
+    ${spielerHtml()}
+    <section class="aktionen">
+      <button class="knopf angriff" id="kAngriff" type="button"><span>Angriff<span class="unter" id="kAngriffUnter"></span></span><kbd>1</kbd></button>
+      <button class="knopf" id="kTrank" type="button"><span>Trank<span class="unter" id="kTrankUnter"></span></span><kbd>2</kbd></button>
+      <button class="knopf" id="kFlucht" type="button"><span>Flucht<span class="unter" id="kFluchtUnter"></span></span><kbd>3</kbd></button>
+    </section>`;
+  $("kAngriff").addEventListener("click", () => aktion("angriff"));
+  $("kTrank").addEventListener("click", () => aktion("trank"));
+  $("kFlucht").addEventListener("click", () => aktion("flucht"));
+  aktualisiere();
+}
+
+function zeichneLager(titel, text) {
+  $("arena").innerHTML = `
+    <section class="lager"><h2 class="titel">${titel}</h2><p>${text}</p><div id="vorschau"></div></section>
+    ${spielerHtml()}
+    <section class="aktionen zwei">
+      <button class="knopf angriff" id="kWeiter" type="button"><span>Weiter in Raum ${s.ziel}<span class="unter" id="kWeiterUnter"></span></span><kbd>1</kbd></button>
+      <button class="knopf" id="kLagerTrank" type="button"><span>Trank trinken<span class="unter" id="kLagerTrankUnter"></span></span><kbd>2</kbd></button>
+    </section>`;
+  $("kWeiter").addEventListener("click", () => { if (s.phase === "lager") betreteRaum(); });
+  $("kLagerTrank").addEventListener("click", lagerTrank);
+  aktualisiereLager();
+  $("kWeiter").focus();
+}
+function lagerTrank() { if (s.phase !== "lager") return; if (trankTrinken()) { aktualisiereLager(); zeichneInventar(); laufSpeichern(); } }
+
+function aktualisiereLager() {
+  const g = s.naechster, w = werte();
+  if (g.ereignis) {
+    $("vorschau").innerHTML = `<div class="vorschau"><div class="siegel">❔</div><div><small>Nächster Raum</small><h3 class="titel">Etwas Ungewöhnliches</h3><small>Kein Kampf, sondern ein Ereignis. Was dich erwartet, siehst du erst drinnen.</small></div></div>`;
+  } else {
+    const f = elementFaktor(g, w.element, w);
+    const urteil = f > 1 ? "Deine Waffe trifft seine Schwäche" : f < 1 ? "Achtung: Er ist resistent gegen deine Waffe" : "Deine Waffe ist neutral gegen ihn";
+    $("vorschau").innerHTML = `<div class="vorschau ${g.boss ? "boss" : ""}"><div class="siegel">${g.bild}</div><div>
+        <small>Nächster Gegner${g.boss ? ` · Boss Stufe ${g.stufe}` : g.elite ? " · Elite" : ""}</small>
+        <h3 class="titel">${g.name}</h3>${merkmaleHtml(g)}
+        <small>${g.leben} Leben · trifft dich für ${trefferVorschau(g, false)}${g.boss ? `, Spezial ${trefferVorschau(g, true)}` : ""}${g.elite === "flink" ? " (zweimal)" : ""} · ${urteil}</small>
+      </div></div>`;
+  }
+  spielerWerteAnzeigen();
+  const heil = trankHeilung(w);
+  const tb = $("kLagerTrank");
+  $("kLagerTrankUnter").textContent = hatSegen("blutpakt") ? "Blutpakt: wirkungslos" : s.traenke === 0 ? "keine übrig" : s.leben >= w.maxLeben ? `Leben voll · ${s.traenke} übrig` : `+${heil} Leben · ${s.traenke} übrig`;
+  tb.disabled = hatSegen("blutpakt") || s.traenke === 0 || s.leben >= w.maxLeben;
+  $("kWeiterUnter").textContent = g.ereignis ? "Ereignis" : g.boss ? "Boss-Raum" : g.elite ? "Elite-Kampf" : "Kampf beginnt";
+  $("ort").innerHTML = `Raum <b>${s.raum}</b> · Bosse <b>${s.bosse}</b>${s.fluch ? ` · Fluch <b>${s.fluch}</b>` : ""}`;
+}
+
+function spielerWerteAnzeigen() {
+  const w = werte();
+  const p = (s.leben / w.maxLeben) * 100;
+  $("spielerWert").style.width = p + "%"; $("spielerNach").style.width = p + "%";
+  $("spielerZahl").textContent = `${s.leben} / ${w.maxLeben}`;
+  $("spielerBalken").classList.toggle("kritisch", p <= 30);
+  $("expWert").style.width = Math.min((s.exp / (50 * s.level)) * 100, 100) + "%";
+  $("expZahl").textContent = `${s.exp} / ${50 * s.level}`;
+  $("levelText").textContent = `${KLASSEN.find((k) => k.key === s.klasse).name} · Level ${s.level}`;
+  $("wAngriff").textContent = w.angriff + (w.element ? " " + ELEMENTE[w.element].icon : "");
+  $("wSchutz").textContent = `${w.schutz} (−${Math.round(schutzAnteil(w.schutz) * 100)} %)`;
+  $("wKrit").textContent = w.krit + " %";
+  $("wTraenke").textContent = `${s.traenke} / ${maxTraenke()}`;
+  $("wGold").textContent = s.gold;
+  $("segenListe").innerHTML = s.segen.map((k) => { const x = SEGEN.find((y) => y.key === k); return `<span class="chip segen" title="${x.gut} · Preis: ${x.schlecht}">✦ ${x.name}</span>`; }).join("");
+}
+
+function aktualisiere() {
+  if (!s || s.phase === "ende" || s.phase === "lager" || s.phase === "ereignis" || !$("gegnerWert")) return;
+  const g = s.gegner, w = werte();
+  $("ort").innerHTML = `Raum <b>${s.raum}</b> · Bosse <b>${s.bosse}</b>${s.fluch ? ` · Fluch <b>${s.fluch}</b>` : ""}`;
+  const gp = (g.leben / g.maxLeben) * 100;
+  $("gegnerWert").style.width = gp + "%"; $("gegnerNach").style.width = gp + "%";
+  $("gegnerZahl").textContent = `${g.leben} / ${g.maxLeben}${s.brand ? " · 🔥 brennt" : ""}`;
+  spielerWerteAnzeigen();
+  const spezial = g.boss && (s.runde + 1) % 3 === 0;
+  const a = $("absicht");
+  a.className = "absicht" + (spezial ? " gefahr" : "");
+  a.textContent = spezial ? `Lädt einen Spezialangriff auf: ${trefferVorschau(g, true)} Schaden beim nächsten Zug`
+    : `Greift als Nächstes für ${trefferVorschau(g, false)} Schaden an${g.elite === "flink" ? ", zweimal" : ""}`;
+  const [min, max] = schadenSpanne(g);
+  const ef = w.element ? elementFaktor(g, w.element, w) : 1;
+  $("kAngriffUnter").textContent = `${min}–${max} Schaden${ef > 1 ? " · Schwachstelle!" : ef < 1 ? " · resistent" : ""}${s.ersterAngriff && skill("erstschlag") ? " · Erstschlag" : ""}`;
+  const heil = trankHeilung(w);
+  $("kTrankUnter").textContent = hatSegen("blutpakt") ? "Blutpakt: wirkungslos" : s.traenke === 0 ? "keine übrig" : s.leben >= w.maxLeben ? `Leben voll · ${s.traenke} übrig` : `+${heil} Leben · ${s.traenke} übrig`;
+  $("kFluchtUnter").textContent = g.boss ? "3 Räume zurück" : "Lauf endet";
+  const aus = beschaeftigt || s.phase !== "kampf";
+  $("kAngriff").disabled = aus;
+  $("kTrank").disabled = aus || hatSegen("blutpakt") || s.traenke === 0 || s.leben >= w.maxLeben;
+  $("kFlucht").disabled = aus;
+}
+
+function feldHtml(it, attr, gewaehlt, besser = false) {
+  const slot = SLOTS.find((q) => q.key === it.slot);
+  return `<button type="button" class="feld s-${it.seltenheit}${gewaehlt ? " gewaehlt" : ""}${besser ? " besser" : ""}" ${attr}>
+    <span class="art">${slot.icon} ${slot.name}</span><span class="nm t-${it.seltenheit}">${it.name}</span><span class="st">${kurzwert(it)}</span></button>`;
+}
+
+const RANG = { gewoehnlich: 0, selten: 1, episch: 2, set: 3, legendaer: 4 };
+function beutelSortiert() {
+  const liste = [...s.beutel];
+  const art = s.sortierung || "neu";
+  const slotNr = (it) => SLOTS.findIndex((q) => q.key === it.slot);
+  if (art === "neu") liste.reverse();
+  if (art === "platz") liste.sort((a, b) => slotNr(a) - slotNr(b) || RANG[b.seltenheit] - RANG[a.seltenheit]);
+  if (art === "seltenheit") liste.sort((a, b) => RANG[b.seltenheit] - RANG[a.seltenheit] || slotNr(a) - slotNr(b));
+  if (art === "besser") liste.sort((a, b) => Number(istBesser(b)) - Number(istBesser(a)) || RANG[b.seltenheit] - RANG[a.seltenheit]);
+  return liste;
+}
+
+function setDialog(key) {
+  const st = SETS[key], n = setZaehlen()[key] || 0;
+  dialog({
+    titel: st.name,
+    text: `${n} von 6 Teilen angelegt. Zum Set gehören: ${st.slots.map((sl) => SLOTS.find((q) => q.key === sl).name).join(", ")}.`,
+    html: `<ul class="set-boni">${st.boni.map((b, i) => `<li class="${n >= (i + 1) * 2 ? "aktiv" : ""}">${(i + 1) * 2} Teile: ${b}</li>`).join("")}</ul>`,
+    knoepfe: [{ text: "Schließen", primaer: true, tun: schliesseDialog }]
+  });
+}
+
+// ---------- Schmied ----------
+function alleGegenstaende() { return [...SLOTS.map((sl) => s.ausr[sl.key]).filter(Boolean), ...s.beutel]; }
+function verbessernKosten(it) { return Math.round((20 + 15 * it.stufe) * (1 + (it.plus || 0))); }
+function umschmiedenKosten(it) { return 30 + 20 * it.stufe; }
+
+function schmied(weiter) {
+  const liste = alleGegenstaende();
+  dialog({
+    titel: "Ein Schmied",
+    text: `Funken sprühen vom Amboss. Du hast ${s.gold} Gold. Welchen Gegenstand soll er bearbeiten?`,
+    html: `<div class="verkauf">${liste.map((it) => `<button class="knopf klein" type="button" data-schmied="${it.id}"><span class="t-${it.seltenheit}">${it.name}</span><span>${kurzwert(it)}</span></button>`).join("")}</div>`,
+    knoepfe: [{ text: "Weiterziehen", primaer: true, tun: weiter }]
+  });
+  $("dialog").querySelectorAll("[data-schmied]").forEach((b) => b.addEventListener("click", () => schmiedGegenstand(Number(b.dataset.schmied), weiter)));
+}
+
+function schmiedGegenstand(id, weiter) {
+  const it = alleGegenstaende().find((x) => x.id === id);
+  if (!it) { schmied(weiter); return; }
+  const kv = verbessernKosten(it), ku = umschmiedenKosten(it), plus = it.plus || 0;
+  const umschmiedbar = it.effekte.length > (it.set ? 1 : 0);
+  dialog({
+    titel: "Am Amboss", text: `Du hast ${s.gold} Gold.`, html: `<div class="details">${itemDetailsHtml(it, false)}</div>`,
+    knoepfe: [
+      { text: `Verbessern auf +${plus + 1}`, unter: plus >= 5 ? "Maximum erreicht" : `${kv} Gold · alle Werte steigen um etwa 15 %`, primaer: true,
+        aus: plus >= 5 || s.gold < kv,
+        tun: () => { s.gold -= kv; verbessern(it); eintrag(`${it.name} geschmiedet (−${kv} Gold).`, "gold"); ton("beute"); nachSchmiede(); schmiedGegenstand(id, weiter); } },
+      { text: "Effekte neu schmieden", unter: umschmiedbar ? `${ku} Gold · neue zufällige Effekte` : "keine Effekte zum Umschmieden",
+        aus: !umschmiedbar || s.gold < ku,
+        tun: () => { s.gold -= ku; umschmieden(it); eintrag(`${it.name} neu geschmiedet (−${ku} Gold).`, "gold"); nachSchmiede(); schmiedGegenstand(id, weiter); } },
+      { text: "Anderen Gegenstand wählen", tun: () => schmied(weiter) }
+    ]
+  });
+}
+function nachSchmiede() { s.leben = Math.min(s.leben, werte().maxLeben); aktualisiere(); zeichneInventar(); }
+
+function verbessern(it) {
+  it.basisName = it.basisName || it.name;
+  it.plus = (it.plus || 0) + 1;
+  it.name = `${it.basisName} +${it.plus}`;
+  if (it.angriff) it.angriff = Math.max(it.angriff + 1, Math.round(it.angriff * 1.15));
+  if (it.schutz) it.schutz = Math.max(it.schutz + 1, Math.round(it.schutz * 1.15));
+  it.effekte.forEach((e) => { if (e.typ !== "block") e.wert = Math.max(e.wert + 1, Math.round(e.wert * 1.1)); });
+  it.wert = Math.round(it.wert * 1.2);
+}
+
+function umschmieden(it) {
+  const fest = it.set ? it.effekte[0] : null;
+  const anzahl = it.effekte.length - (fest ? 1 : 0);
+  const pool = EFFEKT_POOL[it.slot].filter((t) => !fest || t !== fest.typ);
+  const neu = [];
+  for (let i = 0; i < anzahl && pool.length; i++) neu.push(effektErzeugen(pool.splice(zufall(0, pool.length - 1), 1)[0], it.stufe + (it.plus || 0)));
+  it.effekte = fest ? [fest, ...neu] : neu;
+}
+
+// ---------- Töne ----------
+let audio = null;
+function tonAn() { try { return localStorage.getItem("miniDungeonTon") !== "aus"; } catch (e) { return true; } }
+function ton(art) {
+  if (!tonAn()) return;
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    const folgen = { treffer: [[220, 0.06]], krit: [[330, 0.05], [523, 0.09]], schaden: [[110, 0.08]], level: [[392, 0.08], [523, 0.08], [659, 0.15]],
+      beute: [[523, 0.07], [784, 0.12]], sieg: [[294, 0.07], [392, 0.1]], niederlage: [[196, 0.15], [147, 0.3]] }[art];
+    if (!folgen) return;
+    let t = audio.currentTime;
+    folgen.forEach(([f, d]) => {
+      const o = audio.createOscillator(), gain = audio.createGain();
+      o.type = art === "schaden" || art === "niederlage" ? "sawtooth" : "triangle";
+      o.frequency.value = f;
+      gain.gain.setValueAtTime(0.07, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + d);
+      o.connect(gain); gain.connect(audio.destination);
+      o.start(t); o.stop(t + d + 0.02); t += d;
+    });
+  } catch (e) {}
+}
+function tonKnopfAktualisieren() { $("tonKnopf").textContent = tonAn() ? "Ton an" : "Ton aus"; }
+
+function zeichneInventar() {
+  if (!s || s.phase === "ende") return;
+  const w = werte(), a = s.auswahl;
+  const slotsHtml = SLOTS.map((sl) => {
+    const it = s.ausr[sl.key];
+    return it ? feldHtml(it, `data-slot="${sl.key}"`, a && a.ort === "slot" && a.slot === sl.key)
+      : `<div class="feld leer"><span>${sl.icon}</span><span class="art">${sl.name}</span></div>`;
+  }).join("");
+  const beutelHtml = beutelSortiert().map((it) => feldHtml(it, `data-id="${it.id}"`, a && a.ort === "beutel" && a.id === it.id, istBesser(it))).join("")
+    + Array.from({ length: BEUTEL_PLAETZE - s.beutel.length }, () => `<div class="feld leer"></div>`).join("");
+
+  let details = `<p class="leer-hinweis">Wähle einen Gegenstand, um ihn anzusehen und anzulegen. ▲ markiert Teile, die besser sind als deine aktuelle Ausrüstung.</p>`;
+  const kosten = s.phase === "kampf" ? " (kostet deinen Zug)" : "";
+  const gesperrt = beschaeftigt || (s.phase !== "kampf" && s.phase !== "lager" && s.phase !== "ereignis");
+  if (a && a.ort === "beutel") {
+    const it = s.beutel.find((x) => x.id === a.id);
+    if (it) details = `<div class="details">${itemDetailsHtml(it)}<div class="knoepfe">
+        <button class="knopf klein primaer" type="button" data-tun="anlegen" ${gesperrt ? "disabled" : ""}>Anlegen${kosten}</button>
+        <button class="knopf klein" type="button" data-tun="wegwerfen" ${s.phase === "kampf" ? "disabled" : ""}>Wegwerfen</button></div></div>`;
+  } else if (a && a.ort === "slot" && s.ausr[a.slot]) {
+    details = `<div class="details">${itemDetailsHtml(s.ausr[a.slot], false)}<div class="knoepfe">
+        <button class="knopf klein" type="button" data-tun="ablegen" ${gesperrt ? "disabled" : ""}>Ablegen${kosten}</button></div></div>`;
+  }
+
+  const res = ELEMENT_KEYS.filter((k) => w.res[k]).map((k) => `${ELEMENTE[k].icon} ${w.res[k]} %`).join(", ");
+  const sets = Object.entries(w.z).map(([key, n]) => {
+    const st = SETS[key], aktiv = st.boni.slice(0, Math.floor(n / 2));
+    return `<button type="button" class="chip" data-set="${key}">${st.name} ${n}/6${aktiv.length ? ` · ${aktiv.length} ${aktiv.length > 1 ? "Boni" : "Bonus"} aktiv` : ""} · Details</button>`;
+  }).join("");
+
+  $("inventar").innerHTML = `
+    <div class="inv-kopf"><h2 class="titel">Ausrüstung</h2><span>${s.phase === "kampf" ? "Wechsel im Kampf kostet deinen Zug" : "Umrüsten ist außerhalb des Kampfes kostenlos"}</span></div>
+    <div class="slots">${slotsHtml}</div>
+    <div class="kampfwerte">
+      <span>Element <b>${w.element ? elText(w.element) : "keins"}</b></span>
+      <span>Lebensraub <b>${w.lebensraub} %</b></span><span>Block <b>${w.block} %</b></span><span>Dornen <b>${w.dornen}</b></span>
+      <span>Resistenzen <b>${res || "keine"}</b></span>
+    </div>
+    ${sets ? `<div class="set-liste">${sets}</div>` : ""}
+    <div class="unterkopf"><h3 class="titel">Beutel<span>${s.beutel.length} / ${BEUTEL_PLAETZE}</span></h3><div class="sortierung">${[["neu", "Neueste"], ["platz", "Platz"], ["seltenheit", "Seltenheit"], ["besser", "Besser zuerst"]].map(([k, t]) => `<button type="button" data-sort="${k}" aria-pressed="${(s.sortierung || "neu") === k}">${t}</button>`).join("")}</div></div>
+    <div class="beutel">${beutelHtml}</div>
+    ${details}`;
+
+  $("inventar").querySelectorAll("[data-slot]").forEach((b) => b.addEventListener("click", () => { s.auswahl = { ort: "slot", slot: b.dataset.slot }; zeichneInventar(); }));
+  $("inventar").querySelectorAll("[data-id]").forEach((b) => b.addEventListener("click", () => { s.auswahl = { ort: "beutel", id: Number(b.dataset.id) }; zeichneInventar(); }));
+  $("inventar").querySelectorAll("[data-set]").forEach((b) => b.addEventListener("click", () => setDialog(b.dataset.set)));
+  $("inventar").querySelectorAll("[data-sort]").forEach((b) => b.addEventListener("click", () => { s.sortierung = b.dataset.sort; zeichneInventar(); }));
+  const tun = (name, f) => { const b = $("inventar").querySelector(`[data-tun="${name}"]`); if (b) b.addEventListener("click", f); };
+  tun("anlegen", () => anlegen(a.id));
+  tun("wegwerfen", () => wegwerfen(a.id));
+  tun("ablegen", () => ablegen(a.slot));
+}
+
+// =====================================================================
+//   HILFEN
+// =====================================================================
+function eintrag(text, art = "") {
+  const li = document.createElement("li");
+  li.textContent = text; if (art) li.className = art;
+  const ol = $("chronik"); ol.prepend(li);
+  while (ol.children.length > 90) ol.lastChild.remove();
+}
+function zahl(ziel, text, art) {
+  if (!ziel) return;
+  const r = ziel.getBoundingClientRect();
+  const el = document.createElement("div");
+  el.className = "zahl " + art; el.textContent = text;
+  el.style.left = r.left + r.width / 2 + Math.round(Math.random() * 48 - 24) + "px"; el.style.top = r.top - 4 + "px";
+  document.body.appendChild(el); setTimeout(() => el.remove(), 1000);
+}
+function wackle(el) { if (!el) return; el.classList.remove("wackeln", "erscheinen"); void el.offsetWidth; el.classList.add("wackeln"); }
+let hinweisTimer;
+function hinweis(text) { const h = $("hinweis"); h.textContent = text; h.classList.add("an"); clearTimeout(hinweisTimer); hinweisTimer = setTimeout(() => h.classList.remove("an"), 2200); }
+
+function dialog({ titel, text, html = "", knoepfe }) {
+  const d = $("dialog");
+  d.innerHTML = `<h2 class="titel">${titel}</h2>${text ? `<p>${text}</p>` : ""}${html}<div class="knoepfe"></div>`;
+  const box = d.querySelector(".knoepfe");
+  knoepfe.forEach((k, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "knopf" + (k.primaer ? " primaer" : "");
+    b.innerHTML = `<span>${k.text}${k.unter ? `<span class="unter">${k.unter}</span>` : ""}</span><kbd>${i + 1}</kbd>`;
+    b.disabled = !!k.aus; b.addEventListener("click", () => k.tun());
+    box.appendChild(b);
+  });
+  $("schleier").classList.add("offen");
+  const erster = box.querySelector(".primaer:not(:disabled)") || box.querySelector("button:not(:disabled)");
+  if (erster) erster.focus();
+}
+function schliesseDialog() { $("schleier").classList.remove("offen"); }
+
+document.addEventListener("keydown", (e) => {
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  const nr = parseInt(e.key, 10);
+  if ($("schleier").classList.contains("offen")) {
+    const k = $("dialog").querySelectorAll(".knoepfe button");
+    if (nr >= 1 && nr <= k.length && !k[nr - 1].disabled) { e.preventDefault(); k[nr - 1].click(); }
+    return;
+  }
+  if (!s) { const ziel = $("weiterLauf") || $("startKnopf"); if (e.key === "1" && ziel) { e.preventDefault(); ziel.click(); } return; }
+  if (s.phase === "lager") {
+    if (e.key === "1") { e.preventDefault(); betreteRaum(); }
+    if (e.key === "2") { e.preventDefault(); lagerTrank(); }
+    return;
+  }
+  if (s.phase === "ereignis") {
+    const k = $("ereignisKnoepfe") ? $("ereignisKnoepfe").querySelectorAll("button") : [];
+    if (nr >= 1 && nr <= k.length && !k[nr - 1].disabled) { e.preventDefault(); k[nr - 1].click(); }
+    return;
+  }
+  if (s.phase !== "kampf") return;
+  const typ = { 1: "angriff", 2: "trank", 3: "flucht", a: "angriff", t: "trank", f: "flucht" }[e.key.toLowerCase()];
+  if (typ) { e.preventDefault(); aktion(typ); }
+});
+
+$("themaKnopf").addEventListener("click", () => {
+  const r = document.documentElement;
+  const dunkel = r.dataset.theme ? r.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  r.dataset.theme = dunkel ? "light" : "dark";
+  try { localStorage.setItem("miniDungeonThema", r.dataset.theme); } catch (e) {}
+});
+try { const t = localStorage.getItem("miniDungeonThema"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+
+$("tonKnopf").addEventListener("click", () => {
+  try { localStorage.setItem("miniDungeonTon", tonAn() ? "aus" : "an"); } catch (e) {}
+  tonKnopfAktualisieren();
+});
+tonKnopfAktualisieren();
+
+meta = metaLaden();
+zeichneHub();
+
+</script>
+</body>
+</html>
